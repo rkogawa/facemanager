@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="facetec-core" />
+        <module name="facetec-ui" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="facetec" target="1.8" />
+      <module name="facetec-core" target="1.8" />
+      <module name="facetec-ui" target="1.8" />
+      <module name="facetec-versions" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

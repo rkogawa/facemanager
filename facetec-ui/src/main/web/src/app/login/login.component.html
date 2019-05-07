@@ -1,0 +1,21 @@
+<mat-card class="login mat-elevation-z22">
+  <mat-card-content>
+    <img src="assets/Logo Facetec Vert Color.jpg" alt="watermark" class="image">
+    <mat-form-field>
+      <mat-icon matSuffix>person</mat-icon>
+      <input matInput placeholder="Usuário" [(ngModel)]="username" name="username" autofocus required>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-icon matSuffix>lock</mat-icon>
+      <input matInput placeholder="Senha" [(ngModel)]="password" type="password" name="password" (keydown)="onKeydown($event)"
+        required>
+    </mat-form-field>
+  </mat-card-content>
+  <mat-card-actions fxLayoutAlign="center">
+    <button mat-raised-button (click)="login()" color="primary">Login</button>
+  </mat-card-actions>
+</mat-card>
+
+<div class="caption">
+  <span class="border">Interface FTCA-888</span><br>
+</div>

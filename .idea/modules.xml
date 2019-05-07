@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/facetec.iml" filepath="$PROJECT_DIR$/facetec.iml" />
+      <module fileurl="file://$PROJECT_DIR$/facetec-core/facetec-core.iml" filepath="$PROJECT_DIR$/facetec-core/facetec-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/facetec-ui/facetec-ui.iml" filepath="$PROJECT_DIR$/facetec-ui/facetec-ui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/facetec-versions/facetec-versions.iml" filepath="$PROJECT_DIR$/facetec-versions/facetec-versions.iml" />
+    </modules>
+  </component>
+</project>
