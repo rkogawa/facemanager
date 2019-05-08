@@ -1,0 +1,7 @@
+<mat-form-field>
+  <input type="hidden" [matDatepicker]="picker" [(ngModel)]="value">
+  <input #inputComponent [disabled]="disabled" [placeholder]="placeholder" matInput [textMask]="mask"
+    [ngModel]="value | dateFormatPipe" (blur)="onBlur()" (change)='todate($event.target.value)'>
+  <mat-datepicker-toggle tabindex="-1" [disabled]="disabled" matSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-datepicker #picker></mat-datepicker>
+</mat-form-field>

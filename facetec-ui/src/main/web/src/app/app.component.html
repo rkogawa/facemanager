@@ -1,3 +1,9 @@
-<div class="main container-fluid login_container">
+<div *ngIf="!isAuthenticated()" class="main container-fluid login_container">
   <router-outlet></router-outlet>
+</div>
+<div *ngIf="isAuthenticated()">
+  <facetec-menu></facetec-menu>
+  <div class="main container-fluid">
+    <router-outlet></router-outlet>
+  </div>
 </div>

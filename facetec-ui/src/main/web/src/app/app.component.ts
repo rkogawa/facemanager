@@ -21,8 +21,13 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (!this.service.isAuthenticated()) {
+    if (!this.isAuthenticated()) {
       this.router.navigate(['login'], { skipLocationChange: true });
     }
+  }
+
+  isAuthenticated() {
+    console.log('check is authenticated');
+    return this.service.isAuthenticated();
   }
 }

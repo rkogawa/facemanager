@@ -34,7 +34,7 @@ export class LoginComponent implements OnInit {
         sessionStorage.setItem('validUntil', this.jwtHelper.getTokenExpirationDate(token).getTime().toString());
         sessionStorage.setItem('user', tokenDecoded.sub);
         sessionStorage.setItem('image', tokenDecoded.GROUP);
-        this.router.navigate(['']);
+        this.router.navigate(['cadastros']);
       }
     });
   }

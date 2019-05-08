@@ -1,0 +1,111 @@
+<h3 class="page-header">Cadastros</h3>
+<div class="row">
+    <div class="col-md-4 order-md-2 mb-4">
+        <ul *ngIf="imageSrc" class="list-group mb-3">
+            <li class="list-group-item d-flex justify-content-between lh-condensed">
+                <img id="foto" class="foto-image" [src]="imageSrc" alt="your image" />
+            </li>
+        </ul>
+
+        <form class="card p-2">
+            <div class="input-group">
+                <div class="input-group-append">
+                    <input type="file" #file style="display: none" (change)="onFilesAdded($event)" />
+                    <button [disabled]="uploading" mat-raised-button color="primary" class="add-files-btn"
+                        (click)="addFiles()">
+                        Importar foto
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <form [formGroup]="form" class="needs-validation" novalidate>
+        <div class="col-md-4 order-md-1">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <mat-form-field>
+                        <input matInput placeholder="Nome" formControlName="nome" autofocus required>
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <mat-form-field>
+                    <input matInput placeholder="Grupo" formControlName="grupo">
+                </mat-form-field>
+            </div>
+
+            <div class="mb-3">
+                <mat-form-field>
+                    <input matInput placeholder="CPF" formControlName="cpf" required>
+                </mat-form-field>
+            </div>
+
+            <div class="mb-3">
+                <mat-form-field>
+                    <input matInput placeholder="Telefone" formControlName="telefone">
+                </mat-form-field>
+            </div>
+
+            <div class="mb-3">
+                <mat-form-field>
+                    <input matInput placeholder="Celular" formControlName="celular">
+                </mat-form-field>
+            </div>
+
+            <div class="mb-3">
+                <mat-form-field>
+                    <input matInput placeholder="E-mail" formControlName="email">
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="col-md-4 order-md-2">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label id="example-radio-group-label">Informação de acesso</label>
+                    <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                        formControlName="informacaoAcesso">
+                        <mat-radio-button class="example-radio-button" *ngFor="let info of informacoesAcesso"
+                            [value]="info">
+                            {{info}}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <app-date-picker placeholder="Data início" formControlName="dataInicio"></app-date-picker>
+                <mat-form-field>
+                    <input matInput placeholder="Hora início" formControlName="horaInicio">
+                </mat-form-field>
+            </div>
+
+            <div class="mb-3">
+                <app-date-picker placeholder="Data fim" formControlName="dataFim"></app-date-picker>
+                <mat-form-field>
+                    <input matInput placeholder="Hora fim" formControlName="horaFim">
+                </mat-form-field>
+            </div>
+
+            <div class="mb-3">
+                <app-date-picker placeholder="Último acesso" formControlName="dataUltimoAcesso">
+                </app-date-picker>
+                <mat-form-field>
+                    <input matInput formControlName="horaUltimoAcesso">
+                </mat-form-field>
+            </div>
+
+            <div class="mb-3">
+                <mat-form-field>
+                    <textarea matInput placeholder="Comentário" formControlName="comentario"
+                        class="text-area-comentario"></textarea>
+                </mat-form-field>
+            </div>
+
+            <hr class="mb-4">
+            <button class="btn btn-primary btn-lg btn-block" [disabled]="form.invalid" type="submit">Salvar</button>
+        </div>
+    </form>
+</div>

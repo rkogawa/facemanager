@@ -1,0 +1,141 @@
+.logo-menu {
+    width: 100px !important;
+    // height: 240px !important;
+    position: center !important;
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    // opacity: 1 !important;
+}
+
+.navbar-facetec {
+    background-color: #363435;
+    border-color: #363435;
+    height: 50px;
+}
+
+.facetec-item {
+    font-size: 16px !important;
+}
+
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu>.dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -6px;
+    margin-left: -1px;
+    -webkit-border-radius: 0 6px 6px 6px;
+    -moz-border-radius: 0 6px 6px 6px;
+    border-radius: 0 6px 6px 6px;
+}
+
+.dropdown-submenu:hover>.dropdown-menu {
+    display: block;
+}
+
+.dropdown-submenu>a:after {
+    display: block;
+    content: " ";
+    float: right;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 5px 0 5px 5px;
+    border-left-color: #cccccc;
+    margin-top: 5px;
+    margin-right: -10px;
+}
+
+.dropdown-submenu:hover>a:after {
+    border-left-color: #ffffff;
+}
+
+.dropdown-submenu.pull-left {
+    float: none;
+}
+
+.dropdown-submenu.pull-left>.dropdown-menu {
+    left: -100%;
+    margin-left: 10px;
+    -webkit-border-radius: 6px 0 6px 6px;
+    -moz-border-radius: 6px 0 6px 6px;
+    border-radius: 6px 0 6px 6px;
+}
+
+.ambiente-app {
+    display: block;
+    position: relative;
+    top: 5px;
+    padding: 10px;
+    line-height: 20px;
+    font-size: 100%;
+}
+
+.label-dev {
+    background-color: #449d44;
+}
+
+.label-hom {
+    background-color: #31b0d5;
+}
+
+.notifications-label {
+    width: 22px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    border-radius: 50%;
+    position: absolute;
+    font-size: 12px;
+    top: 2px;
+    right: 2px;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.notifications-label-error {
+    background-color: #E75753;
+}
+
+.notifications-label-warn {
+    background-color: #f0ad4e;
+}
+
+.notifications-link-quantidade-error {
+    background-color: #E75753;
+    vertical-align: top;
+}
+
+.notifications-link-quantidade-warn {
+    background-color: #f0ad4e;
+    vertical-align: top;
+}
+
+.notifications-title {
+    background-color: #222;
+    color: #ffffff;
+    pointer-events: none;
+    cursor: default;
+}
+
+.menu-disabled {
+    pointer-events: none;
+    cursor: none;
+    color: #AAAAAA;
+}
+
+.icon-menu-disabled {
+    padding-left: 5px;
+}
+
+.icon-manual-usuario {
+    color: #F0FF00;
+}
+
+.icon-manual-usuario:hover {
+    color: #e0e0e0;
+}

@@ -41,6 +41,10 @@ export class FacetecService {
     }
   }
 
+  public getUser() {
+    return sessionStorage.getItem('user');
+  }
+
   public logout() {
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('user');
