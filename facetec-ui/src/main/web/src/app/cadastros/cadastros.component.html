@@ -1,4 +1,4 @@
-<h3 class="page-header">Cadastros</h3>
+<h3 class="page-header">Cadastro</h3>
 <div class="row">
     <div class="col-md-4 order-md-2 mb-4">
         <ul *ngIf="imageSrc" class="list-group mb-3">
@@ -11,8 +11,7 @@
             <div class="input-group">
                 <div class="input-group-append">
                     <input type="file" #file style="display: none" (change)="onFilesAdded($event)" />
-                    <button [disabled]="uploading" mat-raised-button color="primary" class="add-files-btn"
-                        (click)="addFiles()">
+                    <button mat-raised-button color="primary" class="add-files-btn" (click)="addFiles()">
                         Importar foto
                     </button>
                 </div>
@@ -20,7 +19,7 @@
         </form>
     </div>
 
-    <form [formGroup]="form" class="needs-validation" novalidate>
+    <form [formGroup]="form" novalidate>
         <div class="col-md-4 order-md-1">
             <div class="row">
                 <div class="col-md-6 mb-3">
@@ -64,10 +63,10 @@
         <div class="col-md-4 order-md-2">
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label id="example-radio-group-label">Informação de acesso</label>
+                    <label id="example-radio-group-label">Informação de acesso *</label>
                     <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
                         formControlName="informacaoAcesso">
-                        <mat-radio-button class="example-radio-button" *ngFor="let info of informacoesAcesso"
+                        <mat-radio-button class="info-radio-button" *ngFor="let info of informacoesAcesso"
                             [value]="info">
                             {{info}}
                         </mat-radio-button>
@@ -89,7 +88,7 @@
                 </mat-form-field>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3" *ngIf="edicao">
                 <app-date-picker placeholder="Último acesso" formControlName="dataUltimoAcesso">
                 </app-date-picker>
                 <mat-form-field>
@@ -105,7 +104,14 @@
             </div>
 
             <hr class="mb-4">
-            <button class="btn btn-primary btn-lg btn-block" [disabled]="form.invalid" type="submit">Salvar</button>
+            <div class="mb-3">
+                <button class="btn btn-primary btn-lg btn-facetec" [disabled]="form.invalid"
+                    (click)="save()">Salvar</button>
+                <button class="btn btn-lg btn-facetec" [disabled]="!isCpfPreenchido()"
+                    (click)="pesquisar()">Pesquisar</button>
+                <button class="btn btn-lg btn-facetec" *ngIf="edicao" (click)="novo()">Novo</button>
+                <button class="btn btn-lg btn-facetec" *ngIf="edicao" (click)="excluir()">Excluir</button>
+            </div>
         </div>
     </form>
 </div>

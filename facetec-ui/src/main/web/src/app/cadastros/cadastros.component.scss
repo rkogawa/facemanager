@@ -27,8 +27,9 @@
     margin: 15px 0;
 }
 
-.example-radio-button {
+.info-radio-button {
     margin: 5px;
+    font-weight: normal !important;
 }
 
 .text-area-comentario {
@@ -39,4 +40,8 @@
     width: 100%;
     max-width: 480px;
     max-height: 640px;
+}
+
+.btn-facetec {
+    margin-right: 10px;
 }

@@ -15,6 +15,7 @@ import { MenuComponent } from './menu/menu.component';
 import { CadastrosComponent } from './cadastros/cadastros.component';
 import { DatePickerComponent } from './shared/date-picker/date-picker.component';
 import { DateFormatPipe } from './shared/date-picker/date-format.pipe';
+import { FeedbackService } from './shared/feedback.service';
 
 @NgModule({
   imports: [
@@ -40,7 +41,8 @@ import { DateFormatPipe } from './shared/date-picker/date-format.pipe';
     FacetecService,
     AuthGuardService,
     CustomErrorHandler,
-    DateFormatPipe
+    DateFormatPipe,
+    FeedbackService
   ]
 })
 export class AppModule { }

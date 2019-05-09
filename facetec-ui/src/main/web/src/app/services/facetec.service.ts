@@ -15,7 +15,7 @@ export class FacetecService {
   }
 
   public login(user: string, password: string): Observable<any> {
-    return this.httpClient.post<any>(`${this.baseUrl}login`, { username: user, password: password },
+    return this.httpClient.post<any>(`${this.baseUrl}/login`, { username: user, password: password },
       { ...this.getOptions(), observe: 'response' as 'response' }).pipe(
         catchError(this.handleError('login', null)));
   }
@@ -50,6 +50,36 @@ export class FacetecService {
     sessionStorage.removeItem('user');
     sessionStorage.removeItem('validUntil');
     this.router.navigate(['login'], { skipLocationChange: true });
+  }
+
+  public create<I, O>(path: string, param: I): Observable<O> {
+    const formData: FormData = new FormData();
+
+    Object.keys(param).forEach(key => {
+      if (param[key] instanceof File) {
+        formData.append(key, param[key], param[key].name);
+      } else if (param[key] instanceof Array) {
+        formData.append(key, JSON.stringify(param[key]));
+      } else {
+        formData.append(key, param[key]);
+      }
+    });
+
+    return this.httpClient.post<O>(`${this.baseUrl}/${path}`, formData, this.getOptions()).pipe(
+      catchError(this.handleError('create', null))
+    );
+  }
+
+  public get<T>(path: string, params?: any): Observable<T> {
+    return this.httpClient.get<T>(`${this.baseUrl}/${path}`, this.getOptions(params)).pipe(
+      catchError(this.handleError('get', null))
+    );
+  }
+
+  public delete<O>(path: string, id: number): Observable<O> {
+    return this.httpClient.delete<O>(`${this.baseUrl}/${path}/${id}`, this.getOptions()).pipe(
+      catchError(this.handleError('delete', null))
+    );
   }
 
   private getOptions(httpParams?: HttpParams) {

@@ -21,7 +21,6 @@ public class DeviceLogRestController {
 
     @RequestMapping(value = "/upRecord", method = RequestMethod.POST)
     public void upRecord(@RequestBody String params) throws IOException {
-//        Timestamp time = new Timestamp(vo.getTime());
         Map<String, Object> paramsMap = new ObjectMapper().readValue(params, Map.class);
         System.out.println(paramsMap.get("Name"));
         System.out.println(paramsMap.get("Score"));
@@ -29,8 +28,4 @@ public class DeviceLogRestController {
         System.out.println(new Timestamp((Long) paramsMap.get("Time")));
     }
 
-    @RequestMapping(value = "/teste", method = RequestMethod.POST, produces = APPLICATION_JSON_UTF8_VALUE)
-    public void teste() {
-        System.out.println("Teste");
-    }
 }

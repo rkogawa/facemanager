@@ -27,7 +27,6 @@ export class AppComponent implements OnInit {
   }
 
   isAuthenticated() {
-    console.log('check is authenticated');
     return this.service.isAuthenticated();
   }
 }

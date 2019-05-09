@@ -32,3 +32,128 @@ databaseChangeLog:
     - createSequence:
         incrementBy: 1
         sequenceName: SEQ_FACETEC_USER
+- changeSet:
+    id: 3
+    author: katsuo.ogawa
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              primaryKey: true
+              primaryKeyName: PK_GRUPO
+            name: COD_GRUPO
+            type: java.sql.Types.BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: NOME
+            type: java.sql.Types.VARCHAR(255)
+        tableName: GRUPO
+- changeSet:
+    id: 4
+    author: katsuo.ogawa
+    changes:
+    - createSequence:
+        incrementBy: 1
+        sequenceName: SEQ_GRUPO
+- changeSet:
+    id: 5
+    author: katsuo.ogawa
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              primaryKey: true
+              primaryKeyName: PK_PESSOA
+            name: COD_PESSOA
+            type: java.sql.Types.BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: NOME
+            type: java.sql.Types.VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: CPF
+            type: java.sql.Types.VARCHAR(20)
+        - column:
+            constraints:
+              foreignKeyName: FK_PESSOA_GRUPO
+              references: GRUPO(COD_GRUPO)
+            name: COD_GRUPO
+            type: java.sql.Types.BIGINT
+        - column:
+            name: TELEFONE
+            type: java.sql.Types.VARCHAR(50)
+        - column:
+            name: CELULAR
+            type: java.sql.Types.VARCHAR(50)
+        - column:
+            name: EMAIL
+            type: java.sql.Types.VARCHAR(255)
+        - column:
+            name: INFORMACAO_ACESSO
+            type: java.sql.Types.INTEGER
+        - column:
+            name: DT_HORA_INICIO
+            type: java.sql.Types.TIMESTAMP
+        - column:
+            name: DT_HORA_FIM
+            type: java.sql.Types.TIMESTAMP
+        - column:
+            name: DT_HORA_ULT_ACESSO
+            type: java.sql.Types.TIMESTAMP
+        - column:
+            name: COMENTARIO
+            type: java.sql.Types.VARCHAR(1000)
+        - column:
+            constraints:
+              nullable: false
+              foreignKeyName: FK_PESSOA_USER
+              references: FACETEC_USER(COD_USER)
+            name: COD_USER
+            type: java.sql.Types.BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: FOTO
+            type: java.sql.Types.CLOB
+        tableName: PESSOA
+- changeSet:
+    id: 6
+    author: katsuo.ogawa
+    changes:
+    - createSequence:
+        incrementBy: 1
+        sequenceName: SEQ_PESSOA
+- changeSet:
+      id: 7
+      author: katsuo.ogawa
+      changes:
+      - createIndex:
+            columns:
+            - column:
+                  name: CPF
+            indexName: IX_PESSOA_0
+            tableName: PESSOA
+      - createIndex:
+            columns:
+            - column:
+                  name: COD_GRUPO
+            indexName: IX_PESSOA_1
+            tableName: PESSOA
+      - createIndex:
+            columns:
+            - column:
+                  name: COD_USER
+            indexName: IX_PESSOA_2
+            tableName: PESSOA
+      - createIndex:
+            columns:
+            - column:
+                  name: USERNAME
+            indexName: IX_USER_0
+            tableName: FACETEC_USER
