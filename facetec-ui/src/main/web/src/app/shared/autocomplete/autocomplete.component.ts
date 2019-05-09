@@ -135,9 +135,6 @@ export class AutocompleteComponent implements OnInit, ControlValueAccessor, Vali
       return true;
     }
 
-    // if (this.notRequired !== null && valor.length === 0) {
-    //   return true;
-    // }
     if (this.options) {
       return this.options.includes(valor);
     }

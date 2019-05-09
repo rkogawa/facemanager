@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { FacetecService } from "../services/facetec.service";
 import { FeedbackService } from "../shared/feedback.service";
 import { Pessoa } from "./pessoa";
+import { DeviceService } from "../services/device.service";
 
 @Component({
     selector: 'app-cadastros',
@@ -38,6 +39,7 @@ export class CadastrosComponent {
     constructor(
         private fb: FormBuilder,
         private service: FacetecService,
+        private deviceService: DeviceService,
         private feedbackService: FeedbackService
     ) {
         this.createForm(new Pessoa());
@@ -84,9 +86,19 @@ export class CadastrosComponent {
     }
 
     save() {
-        this.service.create(this.backendPath, this.form.value).subscribe(
+        const formData: FormData = new FormData();
+        const param = this.form.value;
+        Object.keys(param).forEach(key => {
+            if (param[key] instanceof File) {
+                formData.append(key, param[key], param[key].name);
+            } else {
+                formData.append(key, param[key]);
+            }
+        });
+        this.service.create(this.backendPath, formData).subscribe(
             success => {
                 this.feedbackService.showSuccessMessage('Registro cadastrado com sucesso. Iniciando envio da pessoa para aparelhos...');
+                this.deviceService.createPerson(this.form.value);
                 this.createForm(new Pessoa());
             }
         );
@@ -111,6 +123,7 @@ export class CadastrosComponent {
         this.service.delete(this.backendPath, this.form.get('id').value).subscribe(
             result => {
                 this.feedbackService.showSuccessMessage('Registro excluído com sucesso.');
+                this.deviceService.deletePerson(this.form.get('cpf').value);
                 this.novo();
             }
         )

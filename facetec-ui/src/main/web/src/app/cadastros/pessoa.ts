@@ -16,3 +16,7 @@ export class Pessoa {
     comentario = '';
     foto: string;
 }
+
+export class PessoaResponse {
+    dataHoraFim: number;
+}

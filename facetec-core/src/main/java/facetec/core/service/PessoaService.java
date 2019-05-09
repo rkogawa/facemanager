@@ -3,7 +3,6 @@ package facetec.core.service;
 import facetec.core.dao.PessoaDAO;
 import facetec.core.domain.Pessoa;
 import facetec.core.domain.enumx.InformacaoAcessoPessoa;
-import facetec.core.security.dao.FaceTecUserDAO;
 import facetec.core.security.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.NoResultException;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.Base64;
 
 import static facetec.core.domain.enumx.InformacaoAcessoPessoa.VISITANTE;
@@ -26,12 +26,9 @@ public class PessoaService {
     private SecurityService securityService;
 
     @Autowired
-    private FaceTecUserDAO userDAO;
-
-    @Autowired
     private PessoaDAO pessoaDAO;
 
-    public void create(PessoaVO vo, MultipartFile foto) {
+    public PessoaResponseVO create(PessoaVO vo, MultipartFile foto) {
         Pessoa pessoa = new Pessoa();
         pessoa.setNome(vo.getNome());
         pessoa.setCpf(vo.getCpf());
@@ -42,7 +39,7 @@ public class PessoaService {
         pessoa.setDataHoraInicio(getDateTime(vo.getDataInicio(), vo.getHoraInicio()));
         pessoa.setDataHoraFim(getDateTime(vo.getDataFim(), vo.getHoraFim()));
         pessoa.setComentario(vo.getComentario());
-        pessoa.setPredio(userDAO.findBy(securityService.getCurrentUser()));
+        pessoa.setPredio(securityService.getUser());
         try {
             pessoa.setFoto(Base64.getEncoder().encodeToString(foto.getBytes()));
         } catch (IOException e) {
@@ -56,6 +53,12 @@ public class PessoaService {
             throw new RuntimeException("A Data fim deve ser posterior a Data início.");
         }
         pessoaDAO.save(pessoa);
+
+        PessoaResponseVO responseVO = new PessoaResponseVO();
+        if (pessoa.getDataHoraFim() != null) {
+            responseVO.setDataHoraFim(Timestamp.valueOf(pessoa.getDataHoraFim()).getTime());
+        }
+        return responseVO;
     }
 
     public PessoaVO findByCpf(String cpf) {

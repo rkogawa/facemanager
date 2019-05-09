@@ -20,6 +20,7 @@ import { SetupComponent } from './setup/setup.component';
 import { DeviceComponent } from './setup/device.component';
 import { DeviceService } from './services/device.service';
 import { AutocompleteComponent } from './shared/autocomplete/autocomplete.component';
+import { AsyncButtonDirective } from './services/async-button.directive';
 
 @NgModule({
   imports: [
@@ -35,6 +36,7 @@ import { AutocompleteComponent } from './shared/autocomplete/autocomplete.compon
   declarations: [
     AppComponent,
     AutocompleteComponent,
+    AsyncButtonDirective,
     CadastrosComponent,
     DatePickerComponent,
     DateFormatPipe,

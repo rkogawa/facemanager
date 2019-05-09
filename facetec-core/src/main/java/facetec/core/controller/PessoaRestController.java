@@ -1,6 +1,7 @@
 package facetec.core.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import facetec.core.service.PessoaResponseVO;
 import facetec.core.service.PessoaService;
 import facetec.core.service.PessoaVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +27,9 @@ public class PessoaRestController {
     private PessoaService service;
 
     @RequestMapping(method = RequestMethod.POST)
-    public void create(@RequestParam Map<String, Object> params, @RequestParam MultipartFile foto) {
+    public PessoaResponseVO create(@RequestParam Map<String, Object> params, @RequestParam MultipartFile foto) {
         PessoaVO pessoa = new ObjectMapper().convertValue(params, PessoaVO.class);
-        service.create(pessoa, foto);
+        return service.create(pessoa, foto);
     }
 
     @RequestMapping(value = "/{cpf}", method = RequestMethod.GET)

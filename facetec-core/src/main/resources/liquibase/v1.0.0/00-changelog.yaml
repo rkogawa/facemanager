@@ -95,6 +95,8 @@ databaseChangeLog:
             name: EMAIL
             type: java.sql.Types.VARCHAR(255)
         - column:
+            constraints:
+              nullable: false
             name: INFORMACAO_ACESSO
             type: java.sql.Types.INTEGER
         - column:
@@ -130,7 +132,49 @@ databaseChangeLog:
         incrementBy: 1
         sequenceName: SEQ_PESSOA
 - changeSet:
-      id: 7
+    id: 7
+    author: katsuo.ogawa
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              primaryKey: true
+              primaryKeyName: PK_DEVICE
+            name: COD_DEVICE
+            type: java.sql.Types.BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: NOME
+            type: java.sql.Types.VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: IP
+            type: java.sql.Types.VARCHAR(20)
+        - column:
+            constraints:
+              nullable: false
+            name: CLASSIFICACAO
+            type: java.sql.Types.INTEGER
+        - column:
+            constraints:
+              nullable: false
+              foreignKeyName: FK_DEVICE_USER
+              references: FACETEC_USER(COD_USER)
+            name: COD_USER
+            type: java.sql.Types.BIGINT
+        tableName: DEVICE
+- changeSet:
+    id: 8
+    author: katsuo.ogawa
+    changes:
+    - createSequence:
+        incrementBy: 1
+        sequenceName: SEQ_DEVICE
+- changeSet:
+      id: 9
       author: katsuo.ogawa
       changes:
       - createIndex:
@@ -157,3 +201,13 @@ databaseChangeLog:
                   name: USERNAME
             indexName: IX_USER_0
             tableName: FACETEC_USER
+- changeSet:
+      id: 10
+      author: katsuo.ogawa
+      changes:
+      - createIndex:
+            columns:
+            - column:
+                  name: COD_USER
+            indexName: IX_DEVICE_0
+            tableName: DEVICE
