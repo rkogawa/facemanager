@@ -1,0 +1,15 @@
+<mat-form-field [ngClass]="[path + '-autocomplete']">
+  <input type="text" [placeholder]="placeholder" matInput [formControl]="myControl" [matAutocomplete]="auto" (focus)="onFocus()"
+    (change)="onChange()">
+    <button *ngIf="myControl.value && !disableClean" mat-button matSuffix mat-icon-button aria-label="Clear" (click)="onSelectionChanged('')">
+      <mat-icon>close</mat-icon>
+    </button>
+    <button mat-button matSuffix mat-icon-button aria-label="Selecione" [disabled]="myControl.disabled">
+      <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelectionChanged($event.option.value)">
+    <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+      {{option}}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

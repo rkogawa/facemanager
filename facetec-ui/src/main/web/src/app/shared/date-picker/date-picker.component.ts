@@ -29,7 +29,7 @@ const noop = () => {
 export class DatePickerComponent implements ControlValueAccessor, AfterContentInit, Validator {
   public mask = {
     guide: true,
-    showMask: true,
+    showMask: false,
     mask: [/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]
   };
 

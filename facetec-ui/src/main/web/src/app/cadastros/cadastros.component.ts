@@ -19,6 +19,18 @@ export class CadastrosComponent {
 
     informacoesAcesso: string[] = ['Permanente', 'Visitante'];
 
+    public cpfMask = {
+        guide: true,
+        showMask: false,
+        mask: [/\d/, /\d/, /\d/, '.', /\d/, /\d/, /\d/, '.', /\d/, /\d/, /\d/, '-', /\d/, /\d/]
+    };
+
+    public timeMask = {
+        guide: true,
+        showMask: false,
+        mask: [/\d/, /\d/, ':', /\d/, /\d/]
+    };
+
     @ViewChild('file') file;
     public files: Set<File> = new Set();
     imageSrc: string;
@@ -86,7 +98,8 @@ export class CadastrosComponent {
                 this.createForm(result);
                 this.edicao = true;
                 this.imageSrc = `data:image/jpeg;base64,${result.foto}`;
-            }
+            },
+            error => this.novo()
         )
     }
 

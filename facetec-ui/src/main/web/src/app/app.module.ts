@@ -16,32 +16,40 @@ import { CadastrosComponent } from './cadastros/cadastros.component';
 import { DatePickerComponent } from './shared/date-picker/date-picker.component';
 import { DateFormatPipe } from './shared/date-picker/date-format.pipe';
 import { FeedbackService } from './shared/feedback.service';
+import { SetupComponent } from './setup/setup.component';
+import { DeviceComponent } from './setup/device.component';
+import { DeviceService } from './services/device.service';
+import { AutocompleteComponent } from './shared/autocomplete/autocomplete.component';
 
 @NgModule({
   imports: [
-    BrowserModule,
     BrowserAnimationsModule,
+    BrowserModule,
     FormsModule,
-    ReactiveFormsModule,
     HttpClientModule,
     MaterialModule,
-    TextMaskModule,
-    RoutingModule
+    ReactiveFormsModule,
+    RoutingModule,
+    TextMaskModule
   ],
   declarations: [
     AppComponent,
+    AutocompleteComponent,
+    CadastrosComponent,
     DatePickerComponent,
     DateFormatPipe,
+    DeviceComponent,
     LoginComponent,
     MenuComponent,
-    CadastrosComponent
+    SetupComponent,
   ],
   bootstrap: [AppComponent],
   providers: [
-    FacetecService,
     AuthGuardService,
     CustomErrorHandler,
     DateFormatPipe,
+    DeviceService,
+    FacetecService,
     FeedbackService
   ]
 })

@@ -1,4 +1,4 @@
-<h3 class="page-header">Cadastro</h3>
+<h3 class="page-header">Cadastros</h3>
 <div class="row">
     <div class="col-md-4 order-md-2 mb-4">
         <ul *ngIf="imageSrc" class="list-group mb-3">
@@ -19,7 +19,7 @@
         </form>
     </div>
 
-    <form [formGroup]="form" novalidate>
+    <form [formGroup]="form">
         <div class="col-md-4 order-md-1">
             <div class="row">
                 <div class="col-md-6 mb-3">
@@ -37,7 +37,7 @@
 
             <div class="mb-3">
                 <mat-form-field>
-                    <input matInput placeholder="CPF" formControlName="cpf" required>
+                    <input matInput placeholder="CPF" formControlName="cpf" [textMask]="cpfMask" required>
                 </mat-form-field>
             </div>
 
@@ -63,8 +63,8 @@
         <div class="col-md-4 order-md-2">
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label id="example-radio-group-label">Informação de acesso *</label>
-                    <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                    <label id="info-radio-group-label">Informação de acesso *</label>
+                    <mat-radio-group aria-labelledby="info-radio-group-label" class="info-radio-group"
                         formControlName="informacaoAcesso">
                         <mat-radio-button class="info-radio-button" *ngFor="let info of informacoesAcesso"
                             [value]="info">
@@ -77,14 +77,14 @@
             <div class="mb-3">
                 <app-date-picker placeholder="Data início" formControlName="dataInicio"></app-date-picker>
                 <mat-form-field>
-                    <input matInput placeholder="Hora início" formControlName="horaInicio">
+                    <input matInput placeholder="Hora início" formControlName="horaInicio" [textMask]="timeMask">
                 </mat-form-field>
             </div>
 
             <div class="mb-3">
                 <app-date-picker placeholder="Data fim" formControlName="dataFim"></app-date-picker>
                 <mat-form-field>
-                    <input matInput placeholder="Hora fim" formControlName="horaFim">
+                    <input matInput placeholder="Hora fim" formControlName="horaFim" [textMask]="timeMask">
                 </mat-form-field>
             </div>
 
