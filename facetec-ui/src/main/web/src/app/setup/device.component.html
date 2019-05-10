@@ -10,8 +10,8 @@
             <button class="btn btn-lg btn-facetec" [disabled]="formPesquisa.invalid || btnPesquisar.waiting"
                 #btnPesquisar=async-btn async-btn (click)="pesquisar()"
                 [loadingLabel]="'Pesquisando...'">Pesquisar</button>
-            <button class="btn btn-primary btn-lg btn-facetec" [disabled]="!podeSalvar()"
-                (click)="salvar()">Salvar</button>
+            <button class="btn btn-primary btn-lg btn-facetec" [disabled]="!podeSalvar()" (click)="salvar()"
+                #btnSalvar=async-btn async-btn [loadingLabel]="'Gravando...'">Salvar</button>
         </mat-action-row>
     </form>
 </mat-expansion-panel>

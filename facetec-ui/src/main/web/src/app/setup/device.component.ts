@@ -22,12 +22,14 @@ export class DeviceComponent {
     dataSource = new MatTableDataSource();
 
     @ViewChild('btnPesquisar') btnPesquisar: AsyncButtonDirective;
+    @ViewChild('btnSalvar') btnSalvar: AsyncButtonDirective;
     ipVerificado: string;
 
     displayedColumns = ['ip', 'nome', 'classificacao'];
     constructor(
         private fb: FormBuilder,
-        private deviceService: DeviceService
+        private deviceService: DeviceService,
+        private feedbackService: FeedbackService
     ) {
         this.formPesquisa = this.fb.group({
             dominio: ''
@@ -53,40 +55,39 @@ export class DeviceComponent {
                         countIpsVerificados++;
                         if (countIpsVerificados === maxIp) {
                             this.btnPesquisar.release();
-                            this.dataSource = new MatTableDataSource(devices);
-                            const devicesFGs = [];
-                            devices.forEach(device => {
-                                devicesFGs.push(this.fb.group({
-                                    ip: device.ip,
-                                    nome: device.nome,
-                                    classificacao: device.classificacao
-                                }));
-                            });
-                            this.form.setControl('devices', this.fb.array(devicesFGs));
+
+                            if (devices.length === 0) {
+                                this.feedbackService.showErrorMessage('Não foi encontrado nenhum aparelho para este domínio.');
+                            } else {
+                                this.dataSource = new MatTableDataSource(devices);
+                                const devicesFGs = [];
+                                devices.forEach(device => {
+                                    devicesFGs.push(this.fb.group({
+                                        ip: device.ip,
+                                        nome: device.nome,
+                                        classificacao: device.classificacao
+                                    }));
+                                });
+                                this.form.setControl('devices', this.fb.array(devicesFGs));
+                            }
                         }
                     })
                 ).subscribe(
                     success => {
-                        // const device = new Device();
-                        // device.ip = ip;
-                        // this.dataSource.data.push(device);
-                    },
-                    error => {
-                        if (ip === '192.168.15.16' || ip === '192.168.15.127') {
-                            const device = new Device();
-                            device.ip = ip;
-                            devices.push(device);
-                        }
+                        const device = new Device();
+                        device.ip = ip;
+                        devices.push(device);
                     }
                 )
         }
     }
 
     podeSalvar() {
-        return this.form.valid && this.dataSource.data.length > 0;
+        return this.form.valid && this.dataSource.data.length > 0 && !this.btnSalvar.waiting;
     }
 
     salvar() {
-        this.deviceService.saveDevices(this.form.value);
+        this.btnSalvar.wait();
+        this.deviceService.saveDevices(this.form.value, this.btnSalvar);
     }
 }

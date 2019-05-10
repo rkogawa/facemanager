@@ -4,6 +4,8 @@ import { FacetecService } from "../services/facetec.service";
 import { FeedbackService } from "../shared/feedback.service";
 import { Pessoa } from "./pessoa";
 import { DeviceService } from "../services/device.service";
+import { AsyncButtonDirective } from "../services/async-button.directive";
+import { finalize } from "rxjs/operators";
 
 @Component({
     selector: 'app-cadastros',
@@ -19,6 +21,12 @@ export class CadastrosComponent {
     edicao = false;
 
     informacoesAcesso: string[] = ['Permanente', 'Visitante'];
+
+    @ViewChild('btnPesquisar') btnPesquisar: AsyncButtonDirective;
+
+    @ViewChild('btnSalvar') btnSalvar: AsyncButtonDirective;
+
+    @ViewChild('btnExcluir') btnExcluir: AsyncButtonDirective;
 
     public cpfMask = {
         guide: true,
@@ -86,6 +94,7 @@ export class CadastrosComponent {
     }
 
     save() {
+        this.btnSalvar.wait();
         const formData: FormData = new FormData();
         const param = this.form.value;
         Object.keys(param).forEach(key => {
@@ -95,24 +104,31 @@ export class CadastrosComponent {
                 formData.append(key, param[key]);
             }
         });
-        this.service.create(this.backendPath, formData).subscribe(
-            success => {
-                this.feedbackService.showSuccessMessage('Registro cadastrado com sucesso. Iniciando envio da pessoa para aparelhos...');
-                this.deviceService.createPerson(this.form.value);
-                this.createForm(new Pessoa());
-            }
-        );
+        this.service.create(this.backendPath, formData)
+            .pipe(
+                finalize(() => this.btnSalvar.release())
+            ).subscribe(
+                success => {
+                    this.feedbackService.showSuccessMessage('Registro cadastrado com sucesso. Iniciando envio da pessoa para aparelhos...');
+                    this.deviceService.createPerson(this.form.value);
+                    this.createForm(new Pessoa());
+                }
+            );
     }
 
     pesquisar() {
-        this.service.get<Pessoa>(`${this.backendPath}/${this.form.get('cpf').value}`).subscribe(
-            result => {
-                this.createForm(result);
-                this.edicao = true;
-                this.imageSrc = `data:image/jpeg;base64,${result.foto}`;
-            },
-            error => this.novo()
-        )
+        this.btnPesquisar.wait();
+        this.service.get<Pessoa>(`${this.backendPath}/${this.form.get('cpf').value}`)
+            .pipe(
+                finalize(() => this.btnPesquisar.release())
+            ).subscribe(
+                result => {
+                    this.createForm(result);
+                    this.edicao = true;
+                    this.imageSrc = `data:image/jpeg;base64,${result.foto}`;
+                },
+                error => this.novo()
+            )
     }
 
     novo() {
@@ -120,13 +136,17 @@ export class CadastrosComponent {
     }
 
     excluir() {
-        this.service.delete(this.backendPath, this.form.get('id').value).subscribe(
-            result => {
-                this.feedbackService.showSuccessMessage('Registro excluído com sucesso.');
-                this.deviceService.deletePerson(this.form.get('cpf').value);
-                this.novo();
-            }
-        )
+        this.btnExcluir.wait();
+        this.service.delete(this.backendPath, this.form.get('id').value)
+            .pipe(
+                finalize(() => this.btnExcluir.release())
+            ).subscribe(
+                result => {
+                    this.feedbackService.showSuccessMessage('Registro excluído com sucesso.');
+                    this.deviceService.deletePerson(this.form.get('cpf').value);
+                    this.novo();
+                }
+            )
     }
 
     isCpfPreenchido() {

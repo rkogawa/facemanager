@@ -5,6 +5,8 @@ import { Device } from "../setup/device";
 import { FacetecService } from "./facetec.service";
 import { FeedbackService } from "../shared/feedback.service";
 import { Pessoa, PessoaResponse } from "../cadastros/pessoa";
+import { AsyncButtonDirective } from "./async-button.directive";
+import { finalize } from "rxjs/operators";
 
 @Injectable()
 export class DeviceService {
@@ -31,13 +33,16 @@ export class DeviceService {
         return this.postDevice<I>(ip, 'getDeviceKey', {});
     }
 
-    public saveDevices<I>(param: I) {
-        this.service.create(this.backendPath, param).subscribe(
-            success => {
-                this.loadDevices();
-                this.feedbackService.showSuccessMessage('Registro cadastrado com sucesso.');
-            }
-        );
+    public saveDevices<I>(param: I, btnSalvar: AsyncButtonDirective) {
+        this.service.create(this.backendPath, param)
+            .pipe(
+                finalize(() => btnSalvar.release())
+            ).subscribe(
+                success => {
+                    this.loadDevices();
+                    this.feedbackService.showSuccessMessage('Registro cadastrado com sucesso.');
+                }
+            );
     }
 
     public createPerson(pessoa: Pessoa) {

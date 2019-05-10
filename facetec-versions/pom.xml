@@ -21,7 +21,7 @@
         <jsch.version>0.1.54</jsch.version>
         <springfox-swagger.version>2.7.0</springfox-swagger.version>
         <beanio.version>2.1.0</beanio.version>
-        <postgresql.version>9.1-901-1.jdbc4</postgresql.version>
+        <postgresql.version>42.2.5</postgresql.version>
         <apache-poi.version>3.10-FINAL</apache-poi.version>
         <maven.jar.version>3.1.0</maven.jar.version>
         <liquibase.version>3.6.2</liquibase.version>
@@ -68,7 +68,7 @@
 
             <!-- BD -->
             <dependency>
-                <groupId>postgresql</groupId>
+                <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>${postgresql.version}</version>
             </dependency>

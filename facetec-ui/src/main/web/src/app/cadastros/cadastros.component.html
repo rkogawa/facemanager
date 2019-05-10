@@ -105,12 +105,15 @@
 
             <hr class="mb-4">
             <div class="mb-3">
-                <button class="btn btn-primary btn-lg btn-facetec" [disabled]="form.invalid"
-                    (click)="save()">Salvar</button>
-                <button class="btn btn-lg btn-facetec" [disabled]="!isCpfPreenchido()"
-                    (click)="pesquisar()">Pesquisar</button>
+                <button class="btn btn-primary btn-lg btn-facetec" [disabled]="form.invalid" (click)="save()"
+                    #btnSalvar=async-btn async-btn [disabled]="btnSalvar.waiting"
+                    [loadingLabel]="'Gravando...'">Salvar</button>
+                <button class="btn btn-lg btn-facetec" [disabled]="!isCpfPreenchido() || btnPesquisar.waiting"
+                    (click)="pesquisar()" #btnPesquisar=async-btn async-btn
+                    [loadingLabel]="'Pesquisando...'">Pesquisar</button>
                 <button class="btn btn-lg btn-facetec" *ngIf="edicao" (click)="novo()">Novo</button>
-                <button class="btn btn-lg btn-facetec" *ngIf="edicao" (click)="excluir()">Excluir</button>
+                <button class="btn btn-lg btn-facetec" *ngIf="edicao" (click)="excluir()" #btnExcluir=async-btn
+                    async-btn [disabled]="btnExcluir.waiting" [loadingLabel]="'Excluindo...'">Excluir</button>
             </div>
         </div>
     </form>
