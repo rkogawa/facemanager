@@ -58,6 +58,8 @@ public class PessoaService {
         if (pessoa.getDataHoraFim() != null) {
             responseVO.setDataHoraFim(Timestamp.valueOf(pessoa.getDataHoraFim()).getTime());
         }
+        responseVO.setId(pessoa.getId());
+        responseVO.setFoto(pessoa.getFoto());
         return responseVO;
     }
 

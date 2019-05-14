@@ -105,9 +105,8 @@
 
             <hr class="mb-4">
             <div class="mb-3">
-                <button class="btn btn-primary btn-lg btn-facetec" [disabled]="form.invalid" (click)="save()"
-                    #btnSalvar=async-btn async-btn [disabled]="btnSalvar.waiting"
-                    [loadingLabel]="'Gravando...'">Salvar</button>
+                <button class="btn btn-primary btn-lg btn-facetec" [disabled]="form.invalid || btnSalvar.waiting"
+                    (click)="save()" #btnSalvar=async-btn async-btn [loadingLabel]="'Gravando...'">Salvar</button>
                 <button class="btn btn-lg btn-facetec" [disabled]="!isCpfPreenchido() || btnPesquisar.waiting"
                     (click)="pesquisar()" #btnPesquisar=async-btn async-btn
                     [loadingLabel]="'Pesquisando...'">Pesquisar</button>

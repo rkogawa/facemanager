@@ -2,7 +2,7 @@ import { Component, ViewChild, Input } from "@angular/core";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { FacetecService } from "../services/facetec.service";
 import { FeedbackService } from "../shared/feedback.service";
-import { Pessoa } from "./pessoa";
+import { Pessoa, PessoaResponse } from "./pessoa";
 import { DeviceService } from "../services/device.service";
 import { AsyncButtonDirective } from "../services/async-button.directive";
 import { finalize } from "rxjs/operators";
@@ -104,13 +104,13 @@ export class CadastrosComponent {
                 formData.append(key, param[key]);
             }
         });
-        this.service.create(this.backendPath, formData)
+        this.service.create<any, PessoaResponse>(this.backendPath, formData)
             .pipe(
                 finalize(() => this.btnSalvar.release())
             ).subscribe(
                 success => {
                     this.feedbackService.showSuccessMessage('Registro cadastrado com sucesso. Iniciando envio da pessoa para aparelhos...');
-                    this.deviceService.createPerson(this.form.value);
+                    this.deviceService.createPerson(this.form.value, success);
                     this.createForm(new Pessoa());
                 }
             );

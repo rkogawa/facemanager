@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { HttpClient } from "@angular/common/http";
-import { Device } from "../setup/device";
+import { Device, FeedbackPersonDevice } from "../setup/device";
 import { FacetecService } from "./facetec.service";
 import { FeedbackService } from "../shared/feedback.service";
 import { Pessoa, PessoaResponse } from "../cadastros/pessoa";
@@ -45,21 +45,53 @@ export class DeviceService {
             );
     }
 
-    public createPerson(pessoa: Pessoa) {
-        const personCreateParams = { 'pass': this.devicePassword, 'person': { 'id': pessoa.cpf, 'name': pessoa.nome } };
-        const faceCreateParams = { 'pass': this.devicePassword, 'personId': pessoa.cpf, 'imgBase64': pessoa.foto };
+    public createPerson(pessoa: Pessoa, pessoaResponse: PessoaResponse) {
+        const personCreateParams = { 'pass': this.devicePassword, 'person': { 'id': pessoa.cpf, 'name': pessoa.nome, 'idcardNum': pessoaResponse.id, 'iccardNum': '' } };
+        const faceCreateParams = { 'pass': this.devicePassword, 'personId': pessoa.cpf, 'imgBase64': pessoaResponse.foto };
 
+        const log = new FeedbackPersonDevice();
         this.devices.forEach(d => {
-            this.postDevice<PessoaResponse>(d.ip, 'person/create', personCreateParams).subscribe(
-                personResult => {
-                    console.log(`\nRegistro criado com sucesso no device ${d.nome}.`);
-                    this.registrarFoto(pessoa, d, faceCreateParams, personResult);
-                },
-                personError => {
-                    console.log(`\nRegistro não criado no device ${d.nome}: ${personError.message}`);
-                }
-            )
+            this.postDevice<PessoaResponse>(d.ip, 'person/create', personCreateParams)
+                .pipe(
+                    finalize(() => {
+                        if (log.getTotalRegistros() === this.devices.length) {
+                            if (log.hasError()) {
+                                this.feedbackService.showErrorMessage(log.getErrorMessage());
+                            } else {
+                                this.feedbackService.showSuccessMessage(log.getSuccessMessage());
+                            }
+                        }
+                    })
+                )
+                .subscribe(
+                    personResult => {
+                        this.registrarFoto(pessoa, d, faceCreateParams, pessoaResponse, log);
+                    },
+                    personError => log.createError.push(d.nome)
+                )
         });
+    }
+
+    private registrarFoto(pessoa: Pessoa, d: Device, faceCreateParams: any, personResult: PessoaResponse, log: FeedbackPersonDevice) {
+        this.postDevice(d.ip, 'face/create', faceCreateParams).subscribe(
+            faceResult => {
+                this.registrarPermissao(pessoa, d, personResult, log);
+            }, faceError => log.createError.push(d.nome)
+        )
+    }
+
+    private registrarPermissao(pessoa: Pessoa, d: Device, personResult: PessoaResponse, log: FeedbackPersonDevice) {
+        if (personResult.dataHoraFim !== null) {
+            const permissionParams = { 'pass': this.devicePassword, 'personId': pessoa.cpf, 'time': personResult.dataHoraFim };
+            this.postDevice(d.ip, 'person/permissionsCreate', permissionParams).subscribe(
+                permissionResult => {
+                    this.feedbackService.showSuccessMessage(`Visitante com nome ${pessoa.nome} registrado no device.`);
+                    log.success.push(d.nome);
+                }, permissionError => log.permissionError.push(d.nome)
+            )
+        } else {
+            log.success.push(d.nome);
+        }
     }
 
     public deletePerson(cpf: string) {
@@ -68,34 +100,12 @@ export class DeviceService {
         this.devices.forEach(d => {
             this.postDevice<PessoaResponse>(d.ip, 'person/delete', personDeleteParams).subscribe(
                 personResult => {
-                    console.log(`\nRegistro excluido com sucesso no device ${d.nome}.`);
+                    this.feedbackService.showSuccessMessage(`Registro excluído com sucesso no device ${d.nome}.`);
                 },
                 personError => {
-                    console.log(`\nRegistro não excluido no device ${d.nome}: ${personError.message}`);
+                    this.feedbackService.showErrorMessage(`Erro na exclusão do registro no device ${d.nome}: ${personError.message}`);
                 }
             )
         });
-    }
-
-    private registrarFoto(pessoa: Pessoa, d: Device, faceCreateParams: any, personResult: PessoaResponse) {
-        this.postDevice(d.ip, 'face/create', faceCreateParams).subscribe(
-            faceResult => {
-                console.log(`\nFoto registrada com sucesso.`);
-                this.registrarPermissao(pessoa, d, personResult);
-            }, faceError => console.log(`\nFoto não registrado no device ${d.nome}: ${faceError.message}`)
-        )
-    }
-
-    private registrarPermissao(pessoa: Pessoa, d: Device, personResult: PessoaResponse) {
-        if (personResult.dataHoraFim !== null) {
-            const permissionParams = { 'pass': this.devicePassword, 'personId': pessoa.cpf, 'time': personResult.dataHoraFim };
-            this.postDevice(d.ip, 'person/permissionsCreate', permissionParams).subscribe(
-                permissionResult => {
-                    console.log(`\nPermissão registrada no device ${d.nome}`);
-                }, permissionError => {
-                    console.log(`\nPermissão não registrada no device ${d.nome}: ${permissionError.message}`);
-                }
-            )
-        }
     }
 }

@@ -18,5 +18,7 @@ export class Pessoa {
 }
 
 export class PessoaResponse {
+    id: number;
     dataHoraFim: number;
+    foto: string;
 }
