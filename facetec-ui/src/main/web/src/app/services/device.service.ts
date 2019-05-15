@@ -13,20 +13,16 @@ export class DeviceService {
 
     backendPath = 'device';
     devicePassword = '12345';
-    devices: Array<Device> = [];
 
     constructor(private httpClient: HttpClient, private service: FacetecService, private feedbackService: FeedbackService) {
-        this.loadDevices();
     }
 
     private postDevice<I>(ip: string, path: string, params: any) {
         return this.httpClient.post<I>(`http://${ip}:8088/${path}`, params);
     }
 
-    private loadDevices() {
-        this.service.get<Device[]>('device').subscribe(
-            response => this.devices = response
-        )
+    public getDevices() {
+        return this.service.get<Device[]>('device');
     }
 
     public getDeviceKey<I>(ip: string): Observable<any> {
@@ -39,7 +35,6 @@ export class DeviceService {
                 finalize(() => btnSalvar.release())
             ).subscribe(
                 success => {
-                    this.loadDevices();
                     this.feedbackService.showSuccessMessage('Registro cadastrado com sucesso.');
                 }
             );
@@ -50,26 +45,30 @@ export class DeviceService {
         const faceCreateParams = { 'pass': this.devicePassword, 'personId': pessoa.cpf, 'imgBase64': pessoaResponse.foto };
 
         const log = new FeedbackPersonDevice();
-        this.devices.forEach(d => {
-            this.postDevice<PessoaResponse>(d.ip, 'person/create', personCreateParams)
-                .pipe(
-                    finalize(() => {
-                        if (log.getTotalRegistros() === this.devices.length) {
-                            if (log.hasError()) {
-                                this.feedbackService.showErrorMessage(log.getErrorMessage());
-                            } else {
-                                this.feedbackService.showSuccessMessage(log.getSuccessMessage());
-                            }
-                        }
-                    })
-                )
-                .subscribe(
-                    personResult => {
-                        this.registrarFoto(pessoa, d, faceCreateParams, pessoaResponse, log);
-                    },
-                    personError => log.createError.push(d.nome)
-                )
-        });
+        this.getDevices().subscribe(
+            devices => {
+                devices.forEach(d => {
+                    this.postDevice<PessoaResponse>(d.ip, 'person/create', personCreateParams)
+                        .pipe(
+                            finalize(() => {
+                                if (log.getTotalRegistros() === devices.length) {
+                                    if (log.hasError()) {
+                                        this.feedbackService.showErrorMessage(log.getErrorMessage());
+                                    } else {
+                                        this.feedbackService.showSuccessMessage(log.getSuccessMessage());
+                                    }
+                                }
+                            })
+                        )
+                        .subscribe(
+                            personResult => {
+                                this.registrarFoto(pessoa, d, faceCreateParams, pessoaResponse, log);
+                            },
+                            personError => log.createError.push(d.nome)
+                        )
+                });
+            }
+        )
     }
 
     private registrarFoto(pessoa: Pessoa, d: Device, faceCreateParams: any, personResult: PessoaResponse, log: FeedbackPersonDevice) {
@@ -97,15 +96,18 @@ export class DeviceService {
     public deletePerson(cpf: string) {
         const personDeleteParams = { 'pass': this.devicePassword, 'id': cpf };
 
-        this.devices.forEach(d => {
-            this.postDevice<PessoaResponse>(d.ip, 'person/delete', personDeleteParams).subscribe(
-                personResult => {
-                    this.feedbackService.showSuccessMessage(`Registro excluído com sucesso no device ${d.nome}.`);
-                },
-                personError => {
-                    this.feedbackService.showErrorMessage(`Erro na exclusão do registro no device ${d.nome}: ${personError.message}`);
-                }
-            )
-        });
+        this.getDevices().subscribe(
+            devices => {
+                devices.forEach(d => {
+                    this.postDevice<PessoaResponse>(d.ip, 'person/delete', personDeleteParams).subscribe(
+                        personResult => {
+                            this.feedbackService.showSuccessMessage(`Registro excluído com sucesso no device ${d.nome}.`);
+                        },
+                        personError => {
+                            this.feedbackService.showErrorMessage(`Erro na exclusão do registro no device ${d.nome}: ${personError.message}`);
+                        }
+                    )
+                });
+            });
     }
 }

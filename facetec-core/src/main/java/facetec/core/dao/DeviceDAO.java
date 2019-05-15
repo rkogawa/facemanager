@@ -37,6 +37,7 @@ public class DeviceDAO {
         Root<Device> root = query.from(Device.class);
         query.select(root);
         query.where(criteriaBuilder.equal(root.get("predio"), currentUser));
+        query.orderBy(criteriaBuilder.asc(root.get("ip")));
         return getSession().createQuery(query).list();
     }
 

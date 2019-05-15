@@ -8,7 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
 import javax.persistence.NoResultException;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Base64;
@@ -28,6 +33,26 @@ public class PessoaService {
     @Autowired
     private PessoaDAO pessoaDAO;
 
+    private byte[] resize(byte[] foto, int scaledWidth, int scaledHeight)
+            throws IOException {
+        // reads input image
+        BufferedImage inputImage = ImageIO.read(new ByteArrayInputStream(foto));
+
+        // creates output image
+        BufferedImage outputImage = new BufferedImage(scaledWidth,
+                scaledHeight, inputImage.getType());
+
+        // scales the input image to the output image
+        Graphics2D g2d = outputImage.createGraphics();
+        g2d.drawImage(inputImage, 0, 0, scaledWidth, scaledHeight, null);
+        g2d.dispose();
+
+        // writes to output file
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ImageIO.write(outputImage, "jpeg", os);
+        return os.toByteArray();
+    }
+
     public PessoaResponseVO create(PessoaVO vo, MultipartFile foto) {
         Pessoa pessoa = new Pessoa();
         pessoa.setNome(vo.getNome());
@@ -42,6 +67,8 @@ public class PessoaService {
         pessoa.setPredio(securityService.getUser());
         if (foto != null) {
             try {
+                // XXX Verificar se vai ser necessario
+                // byte[] fotoResize = this.resize(foto.getBytes(), 640, 480);
                 pessoa.setFoto(Base64.getEncoder().encodeToString(foto.getBytes()));
             } catch (IOException e) {
                 throw new RuntimeException(String.format("Erro ao converter foto para Base64. %s", e.getMessage()), e);
@@ -53,7 +80,8 @@ public class PessoaService {
         if (pessoa.getInformacaoAcesso().equals(VISITANTE) && (pessoa.getDataHoraInicio() == null || pessoa.getDataHoraFim() == null)) {
             throw new RuntimeException("Campos Data início e Data fim são obrigatórios para visitante.");
         }
-        if (pessoa.getDataHoraInicio() != null && pessoa.getDataHoraFim() != null && !pessoa.getDataHoraFim().isAfter(pessoa.getDataHoraInicio())) {
+        if (pessoa.getDataHoraInicio() != null && pessoa.getDataHoraFim() != null && !pessoa.getDataHoraFim()
+                .isAfter(pessoa.getDataHoraInicio())) {
             throw new RuntimeException("A Data fim deve ser posterior a Data início.");
         }
         pessoaDAO.save(pessoa);

@@ -10,14 +10,17 @@
             <button class="btn btn-lg btn-facetec" [disabled]="formPesquisa.invalid || btnPesquisar.waiting"
                 #btnPesquisar=async-btn async-btn (click)="pesquisar()"
                 [loadingLabel]="'Pesquisando...'">Pesquisar</button>
-            <button class="btn btn-primary btn-lg btn-facetec" [disabled]="!podeSalvar()" (click)="salvar()"
-                #btnSalvar=async-btn async-btn [loadingLabel]="'Gravando...'">Salvar</button>
+            <button class="btn btn-primary btn-lg btn-facetec" [disabled]="form.invalid || btnSalvar.waiting"
+                (click)="salvar()" #btnSalvar=async-btn async-btn [loadingLabel]="'Gravando...'">Salvar</button>
         </mat-action-row>
     </form>
 </mat-expansion-panel>
 
 <div class="mat-elevation-z8 inner-tab">
     <form [formGroup]="form">
+        <mat-form-field>
+            <input matInput type="password" placeholder="Senha admin" formControlName="adminPassword" required>
+        </mat-form-field>
         <table mat-table [dataSource]="dataSource" formArrayName="devices">
 
             <ng-container matColumnDef="ip">

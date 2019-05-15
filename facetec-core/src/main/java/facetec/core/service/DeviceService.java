@@ -24,7 +24,10 @@ public class DeviceService {
     private SecurityService securityService;
 
     public void create(DevicesVO devices) {
-        // XXX Verificar como pegar usuario
+        if (!this.securityService.checkAdminPassword(devices.getAdminPassword())) {
+            throw new RuntimeException("Senha do admin inválida.");
+        }
+
         FaceTecUser currentUser = securityService.getUser();
 
         dao.findBy(currentUser).forEach(d -> dao.delete(d));
