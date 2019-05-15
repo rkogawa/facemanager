@@ -27,9 +27,10 @@ public class PessoaRestController {
     private PessoaService service;
 
     @RequestMapping(method = RequestMethod.POST)
-    public PessoaResponseVO create(@RequestParam Map<String, Object> params, @RequestParam MultipartFile foto) {
+    public PessoaResponseVO create(@RequestParam Map<String, Object> params, @RequestParam(required = false) MultipartFile fileFoto) {
+        params.remove("fileFoto");
         PessoaVO pessoa = new ObjectMapper().convertValue(params, PessoaVO.class);
-        return service.create(pessoa, foto);
+        return service.create(pessoa, fileFoto);
     }
 
     @RequestMapping(value = "/{cpf}", method = RequestMethod.GET)

@@ -40,10 +40,14 @@ public class PessoaService {
         pessoa.setDataHoraFim(getDateTime(vo.getDataFim(), vo.getHoraFim()));
         pessoa.setComentario(vo.getComentario());
         pessoa.setPredio(securityService.getUser());
-        try {
-            pessoa.setFoto(Base64.getEncoder().encodeToString(foto.getBytes()));
-        } catch (IOException e) {
-            throw new RuntimeException(String.format("Erro ao converter foto para Base64. %s", e.getMessage()), e);
+        if (foto != null) {
+            try {
+                pessoa.setFoto(Base64.getEncoder().encodeToString(foto.getBytes()));
+            } catch (IOException e) {
+                throw new RuntimeException(String.format("Erro ao converter foto para Base64. %s", e.getMessage()), e);
+            }
+        } else {
+            pessoa.setFoto(vo.getFoto());
         }
 
         if (pessoa.getInformacaoAcesso().equals(VISITANTE) && (pessoa.getDataHoraInicio() == null || pessoa.getDataHoraFim() == null)) {

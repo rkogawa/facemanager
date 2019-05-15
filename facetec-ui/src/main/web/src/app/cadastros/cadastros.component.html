@@ -1,23 +1,40 @@
 <h3 class="page-header">Cadastros</h3>
 <div class="row">
-    <div class="col-md-4 order-md-2 mb-4">
-        <ul *ngIf="imageSrc" class="list-group mb-3">
-            <li class="list-group-item d-flex justify-content-between lh-condensed">
-                <img id="foto" class="foto-image" [src]="imageSrc" alt="your image" />
-            </li>
-        </ul>
+    <form [formGroup]="formFoto">
+        <div class="col-md-4 order-md-2 mb-4">
+            <ul *ngIf="imageSrc" class="list-group mb-3">
+                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                    <img id="foto" class="foto-image" [src]="imageSrc" alt="your image" />
+                </li>
+            </ul>
 
-        <form class="card p-2">
+            <ul *ngIf="!imageSrc && formFoto.get('useWebcam').value" class="list-group mb-3">
+                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                    <webcam [width]="480" [trigger]="triggerObservable" (imageCapture)="handleImage($event)"></webcam>
+                </li>
+            </ul>
+
             <div class="input-group">
                 <div class="input-group-append">
+                    <mat-slide-toggle formControlName="useWebcam">Utilizar webcam</mat-slide-toggle>
                     <input type="file" #file style="display: none" (change)="onFilesAdded($event)" />
-                    <button mat-raised-button color="primary" class="add-files-btn" (click)="addFiles()">
+                    <button *ngIf="!formFoto.get('useWebcam').value" mat-raised-button color="primary"
+                        class="add-files-btn" (click)="addFiles()">
                         Importar foto
+                    </button>
+
+                    <button *ngIf="!imageSrc && formFoto.get('useWebcam').value" mat-raised-button color="primary"
+                        (click)="tirarFoto()">
+                        Tirar foto
+                    </button>
+                    <button *ngIf="imageSrc && formFoto.get('useWebcam').value" mat-raised-button color="primary"
+                        (click)="novaFoto()">
+                        Nova foto
                     </button>
                 </div>
             </div>
-        </form>
-    </div>
+        </div>
+    </form>
 
     <form [formGroup]="form">
         <div class="col-md-4 order-md-1">

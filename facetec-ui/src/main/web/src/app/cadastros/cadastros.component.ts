@@ -6,6 +6,8 @@ import { Pessoa, PessoaResponse } from "./pessoa";
 import { DeviceService } from "../services/device.service";
 import { AsyncButtonDirective } from "../services/async-button.directive";
 import { finalize } from "rxjs/operators";
+import { WebcamUtil, WebcamImage } from "ngx-webcam";
+import { Subject, Observable } from "rxjs";
 
 @Component({
     selector: 'app-cadastros',
@@ -16,11 +18,17 @@ export class CadastrosComponent {
 
     form: FormGroup;
 
+    formFoto: FormGroup;
+
     backendPath: string = 'pessoa';
 
     edicao = false;
 
     informacoesAcesso: string[] = ['Permanente', 'Visitante'];
+
+    private webcamTrigger: Subject<void> = new Subject<void>();
+
+    public webcamImage: WebcamImage = null;
 
     @ViewChild('btnPesquisar') btnPesquisar: AsyncButtonDirective;
 
@@ -50,6 +58,10 @@ export class CadastrosComponent {
         private deviceService: DeviceService,
         private feedbackService: FeedbackService
     ) {
+        this.formFoto = fb.group({
+            useWebcam: false,
+        });
+
         this.createForm(new Pessoa());
     }
 
@@ -70,10 +82,29 @@ export class CadastrosComponent {
             horaUltimoAcesso: [{ value: pessoa.horaUltimoAcesso, disabled: true }],
             comentario: pessoa.comentario,
             foto: [pessoa.foto, Validators.required],
+            fileFoto: null,
             id: pessoa.id
         })
         this.edicao = false;
         this.imageSrc = null;
+    }
+
+    public tirarFoto(): void {
+        this.webcamTrigger.next();
+    }
+
+    public novaFoto(): void {
+        this.imageSrc = null;
+    }
+
+    public handleImage(webcamImage: WebcamImage): void {
+        this.webcamImage = webcamImage;
+        this.imageSrc = this.webcamImage.imageAsDataUrl;
+        this.form.get('foto').setValue(this.webcamImage.imageAsBase64);
+    }
+
+    public get triggerObservable(): Observable<void> {
+        return this.webcamTrigger.asObservable();
     }
 
     addFiles() {
@@ -85,9 +116,12 @@ export class CadastrosComponent {
         if (target.files && target.files[0]) {
             const file = target.files[0];
 
-            this.form.get('foto').setValue(file);
+            this.form.get('fileFoto').setValue(file);
             const reader = new FileReader();
-            reader.onload = e => this.imageSrc = reader.result as string;
+            reader.onload = e => {
+                this.imageSrc = reader.result as string;
+                this.form.get('foto').setValue(this.imageSrc);
+            }
 
             reader.readAsDataURL(file);
         }

@@ -7,6 +7,7 @@ import { AuthGuardService } from './services/auth-guard.service';
 import { RoutingModule } from './routing.module';
 import { LoginComponent } from './login/login.component';
 import { TextMaskModule } from 'angular2-text-mask';
+import { WebcamModule } from 'ngx-webcam';
 import { MaterialModule } from './material/material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -31,7 +32,8 @@ import { AsyncButtonDirective } from './services/async-button.directive';
     MaterialModule,
     ReactiveFormsModule,
     RoutingModule,
-    TextMaskModule
+    TextMaskModule,
+    WebcamModule
   ],
   declarations: [
     AppComponent,
