@@ -50,5 +50,6 @@
         <module>facetec-versions</module>
         <module>facetec-ui</module>
         <module>facetec-core</module>
+	<module>facetec-client</module>
     </modules>
 </project>

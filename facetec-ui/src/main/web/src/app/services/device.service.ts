@@ -18,7 +18,7 @@ export class DeviceService {
     }
 
     private postDevice<I>(ip: string, path: string, params: any) {
-        return this.httpClient.post<I>(`http://${ip}:8088/${path}`, params);
+        return this.httpClient.post<I>(`https://localhost:8442/${path}/${ip}`, params);
     }
 
     public getDevices() {
