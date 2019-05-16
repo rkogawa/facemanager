@@ -40,15 +40,16 @@ export class DeviceService {
             );
     }
 
-    public createPerson(pessoa: Pessoa, pessoaResponse: PessoaResponse) {
+    public createUpdatePerson(pessoa: Pessoa, pessoaResponse: PessoaResponse, edicao: boolean) {
         const personCreateParams = { 'pass': this.devicePassword, 'person': { 'id': pessoa.cpf, 'name': pessoa.nome, 'idcardNum': pessoaResponse.id, 'iccardNum': '' } };
         const faceCreateParams = { 'pass': this.devicePassword, 'personId': pessoa.cpf, 'imgBase64': pessoaResponse.foto };
 
         const log = new FeedbackPersonDevice();
+        const personBackendPath = edicao ? 'person/update' : 'person/create';
         this.getDevices().subscribe(
             devices => {
                 devices.forEach(d => {
-                    this.postDevice<PessoaResponse>(d.ip, 'person/create', personCreateParams)
+                    this.postDevice<PessoaResponse>(d.ip, personBackendPath, personCreateParams)
                         .pipe(
                             finalize(() => {
                                 if (log.getTotalRegistros() === devices.length) {
@@ -62,7 +63,7 @@ export class DeviceService {
                         )
                         .subscribe(
                             personResult => {
-                                this.registrarFoto(pessoa, d, faceCreateParams, pessoaResponse, log);
+                                this.registrarFoto(pessoa, d, faceCreateParams, pessoaResponse, log, edicao);
                             },
                             personError => log.createError.push(d.nome)
                         )
@@ -71,15 +72,26 @@ export class DeviceService {
         )
     }
 
-    private registrarFoto(pessoa: Pessoa, d: Device, faceCreateParams: any, personResult: PessoaResponse, log: FeedbackPersonDevice) {
+    private registrarFoto(pessoa: Pessoa, d: Device, faceCreateParams: any, personResult: PessoaResponse, log: FeedbackPersonDevice, edicao: boolean) {
         this.postDevice(d.ip, 'face/create', faceCreateParams).subscribe(
             faceResult => {
-                this.registrarPermissao(pessoa, d, personResult, log);
+                this.registrarPermissao(pessoa, d, personResult, log, edicao);
             }, faceError => log.createError.push(d.nome)
         )
     }
 
-    private registrarPermissao(pessoa: Pessoa, d: Device, personResult: PessoaResponse, log: FeedbackPersonDevice) {
+    private registrarPermissao(pessoa: Pessoa, d: Device, personResult: PessoaResponse, log: FeedbackPersonDevice, edicao: boolean) {
+        if (edicao) {
+            const permissionDelParams = { 'pass': this.devicePassword, 'personId': pessoa.cpf };
+            this.postDevice(d.ip, 'person/permissionsDelete', permissionDelParams).subscribe(
+                permissionResult => this.criarPermissao(pessoa, d, personResult, log),
+                permissionError => log.permissionDelError.push(d.nome)
+            )
+        }
+        this.criarPermissao(pessoa, d, personResult, log);
+    }
+
+    private criarPermissao(pessoa: Pessoa, d: Device, personResult: PessoaResponse, log: FeedbackPersonDevice) {
         if (personResult.dataHoraFim !== null) {
             const permissionParams = { 'pass': this.devicePassword, 'personId': pessoa.cpf, 'time': personResult.dataHoraFim };
             this.postDevice(d.ip, 'person/permissionsCreate', permissionParams).subscribe(

@@ -9,6 +9,7 @@ export class FeedbackPersonDevice {
     createError: Array<string> = [];
     faceError: Array<string> = [];
     permissionError: Array<string> = [];
+    permissionDelError: Array<string> = [];
 
     getTotalRegistros() {
         return this.success.length + this.createError.length + this.faceError.length + this.permissionError.length;
@@ -28,6 +29,9 @@ export class FeedbackPersonDevice {
         }
         if (this.faceError.length > 0) {
             message += `Falha para registrar fotos nos aparelhos ${this.faceError.join()}. `;
+        }
+        if (this.permissionDelError.length > 0) {
+            message += `Falha para excluir permissões nos aparelhos ${this.permissionDelError.join()}`;
         }
         if (this.permissionError.length > 0) {
             message += `Falha para registrar permissões nos aparelhos ${this.permissionError.join()}.`;

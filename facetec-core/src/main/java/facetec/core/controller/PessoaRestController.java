@@ -33,6 +33,13 @@ public class PessoaRestController {
         return service.create(pessoa, fileFoto);
     }
 
+    @RequestMapping(method = RequestMethod.PUT)
+    public PessoaResponseVO update(@RequestParam Map<String, Object> params, @RequestParam(required = false) MultipartFile fileFoto) {
+        params.remove("fileFoto");
+        PessoaVO pessoa = new ObjectMapper().convertValue(params, PessoaVO.class);
+        return service.update(pessoa, fileFoto);
+    }
+
     @RequestMapping(value = "/{cpf}", method = RequestMethod.GET)
     public PessoaVO findByCpf(@PathVariable String cpf) {
         return service.findByCpf(cpf);
@@ -42,4 +49,5 @@ public class PessoaRestController {
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }
+
 }

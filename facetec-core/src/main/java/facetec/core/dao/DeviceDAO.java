@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 import java.util.List;
 
@@ -38,6 +39,16 @@ public class DeviceDAO {
         query.select(root);
         query.where(criteriaBuilder.equal(root.get("predio"), currentUser));
         query.orderBy(criteriaBuilder.asc(root.get("ip")));
+        return getSession().createQuery(query).list();
+    }
+
+    public List<Device> findBy(String user) {
+        CriteriaBuilder criteriaBuilder = getSession().getCriteriaBuilder();
+        CriteriaQuery<Device> query = criteriaBuilder.createQuery(Device.class);
+        Root<Device> root = query.from(Device.class);
+        Join<Device, FaceTecUser> join = root.join("predio");
+        query.select(root);
+        query.where(criteriaBuilder.equal(join.get("username"), user));
         return getSession().createQuery(query).list();
     }
 

@@ -55,8 +55,20 @@ public class PessoaService {
 
     public PessoaResponseVO create(PessoaVO vo, MultipartFile foto) {
         Pessoa pessoa = new Pessoa();
-        pessoa.setNome(vo.getNome());
         pessoa.setCpf(vo.getCpf());
+        return salvarPessoa(vo, foto, pessoa);
+    }
+
+    public PessoaResponseVO update(PessoaVO vo, MultipartFile fileFoto) {
+        Pessoa pessoa = pessoaDAO.findById(vo.getId());
+        if (pessoa == null) {
+            throw new RuntimeException("Não foi encontrado pessoa com id " + vo.getId());
+        }
+        return salvarPessoa(vo, fileFoto, pessoa);
+    }
+
+    private PessoaResponseVO salvarPessoa(PessoaVO vo, MultipartFile foto, Pessoa pessoa) {
+        pessoa.setNome(vo.getNome());
         pessoa.setTelefone(vo.getTelefone());
         pessoa.setCelular(vo.getCelular());
         pessoa.setEmail(vo.getEmail());
@@ -77,13 +89,7 @@ public class PessoaService {
             pessoa.setFoto(vo.getFoto());
         }
 
-        if (pessoa.getInformacaoAcesso().equals(VISITANTE) && (pessoa.getDataHoraInicio() == null || pessoa.getDataHoraFim() == null)) {
-            throw new RuntimeException("Campos Data início e Data fim são obrigatórios para visitante.");
-        }
-        if (pessoa.getDataHoraInicio() != null && pessoa.getDataHoraFim() != null && !pessoa.getDataHoraFim()
-                .isAfter(pessoa.getDataHoraInicio())) {
-            throw new RuntimeException("A Data fim deve ser posterior a Data início.");
-        }
+        this.validarPessoa(pessoa);
         pessoaDAO.save(pessoa);
 
         PessoaResponseVO responseVO = new PessoaResponseVO();
@@ -95,9 +101,23 @@ public class PessoaService {
         return responseVO;
     }
 
+    private void validarPessoa(Pessoa pessoa) {
+        if (pessoaDAO.existsBy(pessoa.getCpf(), pessoa.getPredio(), pessoa.getId())) {
+            throw new RuntimeException("Já existe pessoa cadastrada para o CPF " + pessoa.getCpf());
+        }
+
+        if (pessoa.getInformacaoAcesso().equals(VISITANTE) && (pessoa.getDataHoraInicio() == null || pessoa.getDataHoraFim() == null)) {
+            throw new RuntimeException("Campos Data início e Data fim são obrigatórios para visitante.");
+        }
+        if (pessoa.getDataHoraInicio() != null && pessoa.getDataHoraFim() != null && !pessoa.getDataHoraFim()
+                .isAfter(pessoa.getDataHoraInicio())) {
+            throw new RuntimeException("A Data fim deve ser posterior a Data início.");
+        }
+    }
+
     public PessoaVO findByCpf(String cpf) {
         try {
-            Pessoa pessoa = pessoaDAO.findByCpf(cpf);
+            Pessoa pessoa = pessoaDAO.findByCpf(cpf, securityService.getUser());
             PessoaVO vo = new PessoaVO();
             vo.setId(pessoa.getId());
             vo.setNome(pessoa.getNome());
@@ -121,4 +141,5 @@ public class PessoaService {
     public void delete(Long id) {
         pessoaDAO.delete(id);
     }
+
 }

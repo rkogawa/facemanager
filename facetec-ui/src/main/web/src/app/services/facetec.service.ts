@@ -58,6 +58,12 @@ export class FacetecService {
     );
   }
 
+  public update<I, O>(path: string, param: I): Observable<O> {
+    return this.httpClient.put<O>(`${this.baseUrl}/${path}`, param, this.getOptions()).pipe(
+      catchError(this.handleError('update', null))
+    );
+  }
+
   public get<T>(path: string, params?: any): Observable<T> {
     return this.httpClient.get<T>(`${this.baseUrl}/${path}`, this.getOptions(params)).pipe(
       catchError(this.handleError('get', null))

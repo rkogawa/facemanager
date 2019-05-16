@@ -70,7 +70,7 @@ export class CadastrosComponent {
             nome: [pessoa.nome, Validators.required],
             informacaoAcesso: [pessoa.informacaoAcesso, Validators.required],
             grupo: pessoa.grupo,
-            cpf: [pessoa.cpf, Validators.required],
+            cpf: [{ value: pessoa.cpf, disabled: this.edicao }, Validators.required],
             telefone: pessoa.telefone,
             celular: pessoa.celular,
             email: pessoa.email,
@@ -85,7 +85,6 @@ export class CadastrosComponent {
             fileFoto: null,
             id: pessoa.id
         })
-        this.edicao = false;
         this.imageSrc = null;
     }
 
@@ -134,17 +133,20 @@ export class CadastrosComponent {
         Object.keys(param).forEach(key => {
             if (param[key] instanceof File) {
                 formData.append(key, param[key], param[key].name);
-            } else {
+            } else if (param[key] != null) {
                 formData.append(key, param[key]);
             }
         });
-        this.service.create<any, PessoaResponse>(this.backendPath, formData)
+
+        let request = this.edicao ? this.service.update<any, PessoaResponse>(this.backendPath, formData) : this.service.create<any, PessoaResponse>(this.backendPath, formData);
+        request
             .pipe(
                 finalize(() => this.btnSalvar.release())
             ).subscribe(
                 success => {
                     this.feedbackService.showSuccessMessage('Registro cadastrado com sucesso. Iniciando envio da pessoa para aparelhos...');
-                    this.deviceService.createPerson(this.form.value, success);
+                    this.deviceService.createUpdatePerson(this.form.value, success, this.edicao);
+                    this.edicao = false;
                     this.createForm(new Pessoa());
                 }
             );
@@ -157,8 +159,8 @@ export class CadastrosComponent {
                 finalize(() => this.btnPesquisar.release())
             ).subscribe(
                 result => {
-                    this.createForm(result);
                     this.edicao = true;
+                    this.createForm(result);
                     this.imageSrc = `data:image/jpeg;base64,${result.foto}`;
                 },
                 error => this.novo()
@@ -166,6 +168,7 @@ export class CadastrosComponent {
     }
 
     novo() {
+        this.edicao = false;
         this.createForm(new Pessoa());
     }
 
