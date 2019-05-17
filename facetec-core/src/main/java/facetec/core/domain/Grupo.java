@@ -1,10 +1,15 @@
 package facetec.core.domain;
 
+import facetec.core.security.domain.FaceTecUser;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -24,6 +29,10 @@ public class Grupo {
     @Column(name = "NOME", nullable = false)
     private String nome;
 
+    @ManyToOne
+    @JoinColumn(name = "COD_USER", nullable = false, foreignKey = @ForeignKey(name = "FK_PESSOA_USER"))
+    private FaceTecUser predio;
+
     public Long getId() {
         return id;
     }
@@ -38,5 +47,13 @@ public class Grupo {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public FaceTecUser getPredio() {
+        return predio;
+    }
+
+    public void setPredio(FaceTecUser predio) {
+        this.predio = predio;
     }
 }

@@ -48,15 +48,14 @@ export class AutocompleteComponent implements OnInit, ControlValueAccessor, Vali
   @Input() path: string = null;
   @Input() placeholder: string = null;
   @Input() disableClean = false;
-  @Input() disableValidation = false;
   @Input() optionsList: Array<string>;
-  @Output() selectedEmitter = new EventEmitter<boolean>();
+  @Output() onChangeEvent = new EventEmitter<boolean>();
 
   myControl: FormControl = new FormControl('');
   options = new Array<string>();
   filteredOptions: Observable<string[]>;
 
-  constructor(private pService: FacetecService) { }
+  constructor(private service: FacetecService) { }
 
   ngAfterContentInit() {
     // this.placeholder = this.notRequired === null ? this.placeholder + ' *' : this.placeholder;
@@ -77,11 +76,10 @@ export class AutocompleteComponent implements OnInit, ControlValueAccessor, Vali
   }
 
   loadList() {
-    // XXX Implementar junto com grupo
-    // this.pService.list<string[]>(this.path).subscribe(resp => {
-    //   this.options = resp;
-    //   if (this.myControl.value) { this.propagateChange(this.myControl.value); }
-    // });
+    this.service.get<string[]>(`${this.path}/list`).subscribe(resp => {
+      this.options = resp;
+      if (this.myControl.value) { this.propagateChange(this.myControl.value); }
+    });
   }
 
   reloadWith(list: string[]) {
@@ -102,7 +100,7 @@ export class AutocompleteComponent implements OnInit, ControlValueAccessor, Vali
 
   onChange() {
     this.propagateChange(this.myControl.value);
-    this.selectedEmitter.emit(true);
+    this.onChangeEvent.emit(true);
   }
 
   onFocus() {
@@ -113,9 +111,7 @@ export class AutocompleteComponent implements OnInit, ControlValueAccessor, Vali
   propagateChange = (_: any) => { };
 
   writeValue(value: any): void {
-    if (value !== undefined && value !== null) {
-      this.myControl.setValue(value);
-    }
+    this.myControl.setValue(value);
   }
 
   registerOnChange(fn: any): void {
@@ -131,7 +127,7 @@ export class AutocompleteComponent implements OnInit, ControlValueAccessor, Vali
   }
 
   validaValor(valor: string) {
-    if (this.disableValidation) {
+    if (valor === null || valor.length === 0) {
       return true;
     }
 

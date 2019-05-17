@@ -1,0 +1,18 @@
+<mat-expansion-panel [expanded]="true">
+    <form [formGroup]="form">
+
+        <app-autocomplete #grupoAutocomplete (onChangeEvent)="atualizarNome()" placeholder="Grupo cadastrado"
+            path="grupo" formControlName="nomeOriginal">
+        </app-autocomplete>
+        <mat-form-field>
+            <input matInput placeholder="Nome" formControlName="nome" required>
+        </mat-form-field>
+
+        <mat-action-row>
+            <button class="btn btn-primary btn-lg btn-facetec" [disabled]="form.invalid || btnSalvar.waiting"
+                (click)="salvar()" #btnSalvar=async-btn async-btn [loadingLabel]="'Gravando...'">Salvar</button>
+            <button class="btn btn-lg btn-facetec" (click)="excluir()" #btnExcluir=async-btn async-btn
+                [disabled]="!isEdicao()" [loadingLabel]="'Excluindo...'">Excluir</button>
+        </mat-action-row>
+    </form>
+</mat-expansion-panel>

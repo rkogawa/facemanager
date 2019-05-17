@@ -1,7 +1,7 @@
 databaseChangeLog:
 - changeSet:
     id: 1
-    author: katsuo.ogawa
+    author: rkogawa
     changes:
     - createTable:
         columns:
@@ -22,14 +22,14 @@ databaseChangeLog:
         tableName: FACETEC_USER
 - changeSet:
     id: 2
-    author: katsuo.ogawa
+    author: rkogawa
     changes:
     - createSequence:
         incrementBy: 1
         sequenceName: SEQ_FACETEC_USER
 - changeSet:
     id: 3
-    author: katsuo.ogawa
+    author: rkogawa
     changes:
     - createTable:
         columns:
@@ -44,17 +44,24 @@ databaseChangeLog:
               nullable: false
             name: NOME
             type: java.sql.Types.VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+              foreignKeyName: FK_GRUPO_USER
+              references: FACETEC_USER(COD_USER)
+            name: COD_USER
+            type: java.sql.Types.BIGINT
         tableName: GRUPO
 - changeSet:
     id: 4
-    author: katsuo.ogawa
+    author: rkogawa
     changes:
     - createSequence:
         incrementBy: 1
         sequenceName: SEQ_GRUPO
 - changeSet:
     id: 5
-    author: katsuo.ogawa
+    author: rkogawa
     changes:
     - createTable:
         columns:
@@ -95,6 +102,11 @@ databaseChangeLog:
             name: INFORMACAO_ACESSO
             type: java.sql.Types.INTEGER
         - column:
+            constraints:
+              nullable: false
+            name: DT_HORA_REGISTRO
+            type: java.sql.Types.TIMESTAMP
+        - column:
             name: DT_HORA_INICIO
             type: java.sql.Types.TIMESTAMP
         - column:
@@ -121,14 +133,14 @@ databaseChangeLog:
         tableName: PESSOA
 - changeSet:
     id: 6
-    author: katsuo.ogawa
+    author: rkogawa
     changes:
     - createSequence:
         incrementBy: 1
         sequenceName: SEQ_PESSOA
 - changeSet:
     id: 7
-    author: katsuo.ogawa
+    author: rkogawa
     changes:
     - createTable:
         columns:
@@ -163,14 +175,14 @@ databaseChangeLog:
         tableName: DEVICE
 - changeSet:
     id: 8
-    author: katsuo.ogawa
+    author: rkogawa
     changes:
     - createSequence:
         incrementBy: 1
         sequenceName: SEQ_DEVICE
 - changeSet:
       id: 9
-      author: katsuo.ogawa
+      author: rkogawa
       changes:
       - createIndex:
             columns:
@@ -198,7 +210,7 @@ databaseChangeLog:
             tableName: FACETEC_USER
 - changeSet:
       id: 10
-      author: katsuo.ogawa
+      author: rkogawa
       changes:
       - createIndex:
             columns:
@@ -206,3 +218,13 @@ databaseChangeLog:
                   name: COD_USER
             indexName: IX_DEVICE_0
             tableName: DEVICE
+- changeSet:
+      id: 11
+      author: rkogawa
+      changes:
+      - createIndex:
+            columns:
+            - column:
+                  name: COD_USER
+            indexName: IX_GRUPO_0
+            tableName: GRUPO

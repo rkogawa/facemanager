@@ -1,9 +1,11 @@
 package facetec.core.service;
 
+import facetec.core.dao.GrupoDAO;
 import facetec.core.dao.PessoaDAO;
 import facetec.core.domain.Pessoa;
 import facetec.core.domain.enumx.InformacaoAcessoPessoa;
 import facetec.core.security.service.SecurityService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +18,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Base64;
 
 import static facetec.core.domain.enumx.InformacaoAcessoPessoa.VISITANTE;
@@ -33,25 +36,8 @@ public class PessoaService {
     @Autowired
     private PessoaDAO pessoaDAO;
 
-    private byte[] resize(byte[] foto, int scaledWidth, int scaledHeight)
-            throws IOException {
-        // reads input image
-        BufferedImage inputImage = ImageIO.read(new ByteArrayInputStream(foto));
-
-        // creates output image
-        BufferedImage outputImage = new BufferedImage(scaledWidth,
-                scaledHeight, inputImage.getType());
-
-        // scales the input image to the output image
-        Graphics2D g2d = outputImage.createGraphics();
-        g2d.drawImage(inputImage, 0, 0, scaledWidth, scaledHeight, null);
-        g2d.dispose();
-
-        // writes to output file
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        ImageIO.write(outputImage, "jpeg", os);
-        return os.toByteArray();
-    }
+    @Autowired
+    private GrupoDAO grupoDAO;
 
     public PessoaResponseVO create(PessoaVO vo, MultipartFile foto) {
         Pessoa pessoa = new Pessoa();
@@ -72,9 +58,15 @@ public class PessoaService {
         pessoa.setTelefone(vo.getTelefone());
         pessoa.setCelular(vo.getCelular());
         pessoa.setEmail(vo.getEmail());
+        if (StringUtils.isNotEmpty(vo.getGrupo())) {
+            pessoa.setGrupo(grupoDAO.findBy(vo.getGrupo(), securityService.getUser()));
+        } else {
+            pessoa.setGrupo(null);
+        }
         pessoa.setInformacaoAcesso(InformacaoAcessoPessoa.byDescricao(vo.getInformacaoAcesso()));
         pessoa.setDataHoraInicio(getDateTime(vo.getDataInicio(), vo.getHoraInicio()));
         pessoa.setDataHoraFim(getDateTime(vo.getDataFim(), vo.getHoraFim()));
+        pessoa.setDataHoraRegistro(LocalDateTime.now());
         pessoa.setComentario(vo.getComentario());
         pessoa.setPredio(securityService.getUser());
         if (foto != null) {
@@ -115,6 +107,25 @@ public class PessoaService {
         }
     }
 
+    private byte[] resize(byte[] foto, int scaledWidth, int scaledHeight)
+            throws IOException {
+        // reads input image
+        BufferedImage inputImage = ImageIO.read(new ByteArrayInputStream(foto));
+
+        // creates output image
+        BufferedImage outputImage = new BufferedImage(scaledWidth, scaledHeight, inputImage.getType());
+
+        // scales the input image to the output image
+        Graphics2D g2d = outputImage.createGraphics();
+        g2d.drawImage(inputImage, 0, 0, scaledWidth, scaledHeight, null);
+        g2d.dispose();
+
+        // writes to output file
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ImageIO.write(outputImage, "jpeg", os);
+        return os.toByteArray();
+    }
+
     public PessoaVO findByCpf(String cpf) {
         try {
             Pessoa pessoa = pessoaDAO.findByCpf(cpf, securityService.getUser());
@@ -125,6 +136,9 @@ public class PessoaService {
             vo.setTelefone(pessoa.getTelefone());
             vo.setCelular(pessoa.getCelular());
             vo.setEmail(pessoa.getEmail());
+            if (pessoa.getGrupo() != null) {
+                vo.setGrupo(pessoa.getGrupo().getNome());
+            }
             vo.setInformacaoAcesso(pessoa.getInformacaoAcesso().getDescricao());
             vo.setDataInicio(DateTimeUtils.convertISODate(pessoa.getDataHoraInicio()));
             vo.setHoraInicio(DateTimeUtils.convertTime(pessoa.getDataHoraInicio()));

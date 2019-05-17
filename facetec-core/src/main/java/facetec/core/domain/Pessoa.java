@@ -59,6 +59,9 @@ public class Pessoa {
     @Column(name = "DT_HORA_ULT_ACESSO")
     private LocalDateTime ultimoAcesso;
 
+    @Column(name = "DT_HORA_REGISTRO")
+    private LocalDateTime dataHoraRegistro;
+
     @Column(name = "COMENTARIO")
     private String comentario;
 
@@ -147,6 +150,14 @@ public class Pessoa {
 
     public void setDataHoraFim(LocalDateTime dataHoraFim) {
         this.dataHoraFim = dataHoraFim;
+    }
+
+    public LocalDateTime getDataHoraRegistro() {
+        return dataHoraRegistro;
+    }
+
+    public void setDataHoraRegistro(LocalDateTime dataHoraRegistro) {
+        this.dataHoraRegistro = dataHoraRegistro;
     }
 
     public LocalDateTime getUltimoAcesso() {

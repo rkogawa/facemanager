@@ -22,6 +22,7 @@ import { DeviceComponent } from './setup/device.component';
 import { DeviceService } from './services/device.service';
 import { AutocompleteComponent } from './shared/autocomplete/autocomplete.component';
 import { AsyncButtonDirective } from './services/async-button.directive';
+import { GrupoComponent } from './setup/grupo.component';
 
 @NgModule({
   imports: [
@@ -43,6 +44,7 @@ import { AsyncButtonDirective } from './services/async-button.directive';
     DatePickerComponent,
     DateFormatPipe,
     DeviceComponent,
+    GrupoComponent,
     LoginComponent,
     MenuComponent,
     SetupComponent,
