@@ -35,7 +35,7 @@ public class ClientDeviceRestController {
 
     @RequestMapping(value = "person/delete/{ip:.+}", method = RequestMethod.POST)
     public String personDelete(@PathVariable String ip, @RequestBody String params) {
-        return service.postWithParams(ip,"person/update", params);
+        return service.postWithParams(ip,"person/delete", params);
     }
 
     @RequestMapping(value = "face/create/{ip:.+}", method = RequestMethod.POST)
