@@ -2,13 +2,15 @@ package facetec.client.service;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.Socket;
+import java.net.InetAddress;
 
 /**
  * Created by rkogawa on 15/05/19.
@@ -16,29 +18,52 @@ import java.net.Socket;
 @Service
 public class ClientDeviceService {
 
-    public String getDeviceKey(String ip) {
-//        try {
-//            Socket socket = new Socket(ip, 8088);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+    @Value("${facetec.client.deviceBaseUrl:http://%s:8088/%s}")
+    private String deviceBaseUrl;
 
-        CloseableHttpClient client = HttpClients.createDefault();
+    public String getDeviceKey(String ip) {
         try {
-            HttpPost httpPost = new HttpPost("http://" + ip + ":8088/getDeviceKey");
-            //            String json = "{\"pass\": \"12345\", \"id\":\"-1\"}";
-            //            StringEntity entity = new StringEntity(json);
-            //            httpPost.setEntity(entity);
+            InetAddress address = InetAddress.getByName(ip);
+            if (!address.isReachable(5000)) {
+                throw new RuntimeException("IP não utilizado na rede.");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return post(ip, "getDeviceKey", null);
+    }
+
+    private String post(String ip, String requestPath, String jsonParams) {
+        CloseableHttpClient client = HttpClients.createDefault();
+
+        try {
+            HttpPost httpPost = new HttpPost(getDeviceUrl(ip, requestPath));
+            if (jsonParams != null) {
+                StringEntity entity = new StringEntity(jsonParams);
+                httpPost.setEntity(entity);
+            }
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
 
             CloseableHttpResponse response = client.execute(httpPost);
-            String responseBody = EntityUtils.toString(response.getEntity());
-            client.close();
-            return responseBody;
+            return EntityUtils.toString(response.getEntity());
         } catch (Exception e) {
             throw new RuntimeException(e);
+        } finally {
+            try {
+                client.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
+    private String getDeviceUrl(String ip, String requestPath) {
+        return String.format(this.deviceBaseUrl, ip, requestPath);
+    }
+
+    public String postWithParams(String ip, String requestPath, String params) {
+        return post(ip, requestPath, params);
+    }
 }

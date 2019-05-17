@@ -12,7 +12,7 @@ export class FeedbackPersonDevice {
     permissionDelError: Array<string> = [];
 
     getTotalRegistros() {
-        return this.success.length + this.createError.length + this.faceError.length + this.permissionError.length;
+        return this.success.length + this.createError.length + this.faceError.length + this.permissionError.length + this.permissionDelError.length;
     }
 
     hasError() {

@@ -45,11 +45,10 @@ export class DeviceService {
         const faceCreateParams = { 'pass': this.devicePassword, 'personId': pessoa.cpf, 'imgBase64': pessoaResponse.foto };
 
         const log = new FeedbackPersonDevice();
-        const personBackendPath = edicao ? 'person/update' : 'person/create';
         this.getDevices().subscribe(
             devices => {
                 devices.forEach(d => {
-                    this.postDevice<PessoaResponse>(d.ip, personBackendPath, personCreateParams)
+                    this.postDevice<PessoaResponse>(d.ip, 'person/create', personCreateParams)
                         .pipe(
                             finalize(() => {
                                 if (log.getTotalRegistros() === devices.length) {

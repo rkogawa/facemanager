@@ -23,6 +23,7 @@ export class CadastrosComponent {
     backendPath: string = 'pessoa';
 
     edicao = false;
+    cpfPesquisa = '';
 
     informacoesAcesso: string[] = ['Permanente', 'Visitante'];
 
@@ -145,7 +146,12 @@ export class CadastrosComponent {
             ).subscribe(
                 success => {
                     this.feedbackService.showSuccessMessage('Registro cadastrado com sucesso. Iniciando envio da pessoa para aparelhos...');
-                    this.deviceService.createUpdatePerson(this.form.value, success, this.edicao);
+                    let pessoa = this.form.value;
+                    if (this.edicao) {
+                        pessoa['cpf'] = this.cpfPesquisa;
+                    }
+
+                    this.deviceService.createUpdatePerson(pessoa, success, false);
                     this.edicao = false;
                     this.createForm(new Pessoa());
                 }
@@ -154,7 +160,8 @@ export class CadastrosComponent {
 
     pesquisar() {
         this.btnPesquisar.wait();
-        this.service.get<Pessoa>(`${this.backendPath}/${this.form.get('cpf').value}`)
+        this.cpfPesquisa = this.form.get('cpf').value;
+        this.service.get<Pessoa>(`${this.backendPath}/${this.cpfPesquisa}`)
             .pipe(
                 finalize(() => this.btnPesquisar.release())
             ).subscribe(
@@ -180,7 +187,7 @@ export class CadastrosComponent {
             ).subscribe(
                 result => {
                     this.feedbackService.showSuccessMessage('Registro excluído com sucesso.');
-                    this.deviceService.deletePerson(this.form.get('cpf').value);
+                    this.deviceService.deletePerson(this.cpfPesquisa);
                     this.novo();
                 }
             )
