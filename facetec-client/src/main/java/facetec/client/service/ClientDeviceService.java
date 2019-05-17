@@ -17,11 +17,11 @@ import java.net.Socket;
 public class ClientDeviceService {
 
     public String getDeviceKey(String ip) {
-        try {
-            Socket socket = new Socket(ip, 8088);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            Socket socket = new Socket(ip, 8088);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
 
         CloseableHttpClient client = HttpClients.createDefault();
         try {
@@ -39,7 +39,6 @@ public class ClientDeviceService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        //        });
     }
 
 }

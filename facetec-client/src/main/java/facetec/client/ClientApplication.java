@@ -1,8 +1,19 @@
 package facetec.client;
 
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 import javax.swing.*;
@@ -14,31 +25,47 @@ import java.net.URI;
  */
 @SpringBootApplication
 @ComponentScan({ "facetec" })
-public class ClientApplication implements CommandLineRunner {
+public class ClientApplication extends Application implements CommandLineRunner {
+    private ConfigurableApplicationContext springContext;
+    private Parent rootNode;
+    private FXMLLoader fxmlLoader;
+
+    @Value("${facetec.client.url}")
+    private String url;
 
     public static void main(String[] args) {
-        new SpringApplicationBuilder(ClientApplication.class).headless(false).run(args);
+        launch(args);
     }
 
     @Override
     public void run(String... args) {
-//        JFrame frame = new JFrame("Spring Boot Swing App");
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.setSize(300, 300);
-//        JPanel panel = new JPanel(new BorderLayout());
-//        JTextField text = new JTextField("Spring Boot can be used with Swing apps");
-//        panel.add(text, BorderLayout.CENTER);
-//        frame.setContentPane(panel);
-//        frame.setVisible(true);
-
-        if (Desktop.isDesktopSupported()) {
-            Desktop desktop = Desktop.getDesktop();
-            try {
-                desktop.browse(new URI("https://ec2-18-223-252-184.us-east-2.compute.amazonaws.com:8443/facetec/"));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
+        getHostServices().showDocument(url);
     }
 
+    @Override
+    public void init() throws Exception {
+        springContext = new SpringApplicationBuilder(ClientApplication.class).headless(true).run();
+        fxmlLoader = new FXMLLoader();
+        fxmlLoader.setControllerFactory(springContext::getBean);
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        fxmlLoader.setLocation(getClass().getResource("/fxml/sample.fxml"));
+        rootNode = fxmlLoader.load();
+
+        primaryStage.getIcons().add(new Image("facetec_logo_branco.jpg"));
+
+        primaryStage.setTitle("FACETEC - Interface FTCA-888");
+        Scene scene = new Scene(rootNode, 600, 420);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        springContext.stop();
+        Platform.exit();
+        System.exit(0);
+    }
 }
