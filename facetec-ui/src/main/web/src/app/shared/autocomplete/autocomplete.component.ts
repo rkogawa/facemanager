@@ -111,7 +111,9 @@ export class AutocompleteComponent implements OnInit, ControlValueAccessor, Vali
   propagateChange = (_: any) => { };
 
   writeValue(value: any): void {
-    this.myControl.setValue(value);
+    if (value !== undefined && value !== null) {
+      this.myControl.setValue(value);
+    }
   }
 
   registerOnChange(fn: any): void {

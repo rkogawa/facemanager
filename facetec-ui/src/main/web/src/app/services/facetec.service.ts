@@ -27,6 +27,9 @@ export class FacetecService {
     };
   }
 
+  public isAdmin(): boolean {
+    return JSON.parse(sessionStorage.getItem('admin'));
+  }
 
   public isAuthenticated(): boolean {
     let ret = false;

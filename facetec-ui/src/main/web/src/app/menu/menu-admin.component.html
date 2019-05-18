@@ -1,0 +1,33 @@
+<nav class="navbar navbar-inverse navbar-facetec navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                data-target="#menu-navbar-collapse" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="collapse navbar-collapse" id="menu-navbar-collapse">>
+            <ul class="nav navbar-nav">
+                <li>
+                    <a routerLink="#"><img src="assets/facetec_menu_logo.jpg" alt="watermark" class="logo-menu"></a>
+                </li>
+                <li class="facetec-item">
+                    <a routerLink="/usuarios" routerLinkActive="active">Usuários</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="facetec-item">
+                    <a routerLinkActive="active">
+                        <i class="fa fa-user-circle-o" aria-hidden="true"></i> {{ user }}
+                    </a>
+                </li>
+                <li class="facetec-item">
+                    <a href="#" (click)="logout()">Sair</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

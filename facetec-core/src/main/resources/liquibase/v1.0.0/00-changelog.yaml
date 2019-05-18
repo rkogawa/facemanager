@@ -17,6 +17,11 @@ databaseChangeLog:
             name: PASSWORD
             type: java.sql.Types.VARCHAR(255)
         - column:
+            constraints:
+              nullable: false
+            name: ADMIN
+            type: java.sql.Types.BOOLEAN
+        - column:
             name: USERNAME
             type: java.sql.Types.VARCHAR(255)
         tableName: FACETEC_USER

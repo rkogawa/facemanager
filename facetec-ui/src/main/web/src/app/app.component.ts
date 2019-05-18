@@ -29,4 +29,8 @@ export class AppComponent implements OnInit {
   isAuthenticated() {
     return this.service.isAuthenticated();
   }
+
+  isAdmin() {
+    return this.service.isAdmin();
+  }
 }

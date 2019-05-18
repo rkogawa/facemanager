@@ -23,6 +23,9 @@ import { DeviceService } from './services/device.service';
 import { AutocompleteComponent } from './shared/autocomplete/autocomplete.component';
 import { AsyncButtonDirective } from './services/async-button.directive';
 import { GrupoComponent } from './setup/grupo.component';
+import { MenuAdminComponent } from './menu/menu-admin.component';
+import { UsuarioComponent } from './usuarios/usuario.component';
+import { AuthGuardAdminService } from './services/auth-guard-admin.service';
 
 @NgModule({
   imports: [
@@ -46,12 +49,15 @@ import { GrupoComponent } from './setup/grupo.component';
     DeviceComponent,
     GrupoComponent,
     LoginComponent,
+    MenuAdminComponent,
     MenuComponent,
     SetupComponent,
+    UsuarioComponent
   ],
   bootstrap: [AppComponent],
   providers: [
     AuthGuardService,
+    AuthGuardAdminService,
     CustomErrorHandler,
     DateFormatPipe,
     DeviceService,

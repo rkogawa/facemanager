@@ -4,6 +4,8 @@ import { LoginComponent } from './login/login.component';
 import { AuthGuardService } from './services/auth-guard.service';
 import { CadastrosComponent } from './cadastros/cadastros.component';
 import { SetupComponent } from './setup/setup.component';
+import { UsuarioComponent } from './usuarios/usuario.component';
+import { AuthGuardAdminService } from './services/auth-guard-admin.service';
 
 const routes: Routes = [
   {
@@ -18,6 +20,10 @@ const routes: Routes = [
     path: 'setup', component: SetupComponent,
     canActivate: [AuthGuardService]
   },
+  {
+    path: 'usuarios', component: UsuarioComponent,
+    canActivate: [AuthGuardAdminService]
+  }
 ];
 
 @NgModule({

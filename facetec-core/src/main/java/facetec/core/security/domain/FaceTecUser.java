@@ -27,6 +27,9 @@ public class FaceTecUser {
     @Column(name = "PASSWORD", nullable = false)
     private String password;
 
+    @Column(name = "ADMIN", nullable = false)
+    private boolean admin;
+
     public Long getId() {
         return id;
     }
@@ -51,4 +54,11 @@ public class FaceTecUser {
         this.password = password;
     }
 
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
 }

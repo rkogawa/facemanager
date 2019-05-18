@@ -1,10 +1,12 @@
 package facetec.core.configuration;
 
+import facetec.core.security.dao.FaceTecUserDAO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -21,11 +23,16 @@ import java.util.Date;
 @Component
 public class TokenAuthenticationService {
 
-    private static final String SECRET = "MySecreteApp";
+    private static final String SECRET = "FacetecService";
 
     private static final String HEADER_AUTH_STRING = "Authorization";
 
     private static final String HEADER_FAILURE_STRING = "Failure";
+
+    private static final String HEADER_ADMIN = "Admin";
+
+    @Autowired
+    private FaceTecUserDAO dao;
 
     @Transactional
     public void addAuthentication(HttpServletResponse response,
@@ -33,6 +40,7 @@ public class TokenAuthenticationService {
         JwtBuilder jwtBuilder = Jwts.builder()
                 .setSubject(username.getName())
                 .setExpiration(new Date(System.currentTimeMillis() + 860_000_000))
+                .claim(HEADER_ADMIN, dao.findBy(username.getName()).isAdmin())
                 .signWith(SignatureAlgorithm.HS512, SECRET);
         response.addHeader(HEADER_AUTH_STRING, jwtBuilder.compact());
     }

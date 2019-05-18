@@ -2,7 +2,12 @@
   <router-outlet></router-outlet>
 </div>
 <div *ngIf="isAuthenticated()">
-  <facetec-menu></facetec-menu>
+  <div *ngIf="!isAdmin()">
+    <facetec-menu></facetec-menu>
+  </div>
+  <div *ngIf="isAdmin()">
+    <facetec-menu-admin></facetec-menu-admin>
+  </div>
   <div class="main container-fluid">
     <router-outlet></router-outlet>
   </div>

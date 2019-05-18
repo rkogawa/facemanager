@@ -1,0 +1,44 @@
+<h3 class="page-header">Usuários</h3>
+<div class="row">
+    <form [formGroup]="form">
+
+        <div class="col-md-12 order-md-1">
+            <div class="row col-md-12">
+                <app-autocomplete #usernameAutocomplete (onChangeEvent)="atualizarUsername()"
+                    placeholder="Usuário cadastrado" path="usuario" formControlName="usernameOriginal">
+                </app-autocomplete>
+            </div>
+
+            <div class="row col-md-12">
+                <mat-form-field>
+                    <input matInput placeholder="Usuário" formControlName="username" required>
+                </mat-form-field>
+
+                <mat-slide-toggle class="facetec-slide" formControlName="admin">Admin</mat-slide-toggle>
+            </div>
+
+
+            <div class="row col-md-12">
+
+                <mat-form-field>
+                    <input matInput placeholder="Senha" formControlName="password" type="password" required>
+                </mat-form-field>
+
+                <mat-slide-toggle class="facetec-slide" *ngIf="isEdicao()" (change)="mudarSenha()"
+                    formControlName="changePassword">Mudar senha
+                </mat-slide-toggle>
+            </div>
+
+            <hr class="col-md-12">
+
+            <div class="col-md-12">
+                <mat-action-row>
+                    <button class="btn btn-primary btn-lg btn-facetec" [disabled]="form.invalid || btnSalvar.waiting"
+                        (click)="salvar()" #btnSalvar=async-btn async-btn [loadingLabel]="'Gravando...'">Salvar</button>
+                    <button class="btn btn-lg btn-facetec" (click)="excluir()" #btnExcluir=async-btn async-btn
+                        [disabled]="!isEdicao()" [loadingLabel]="'Excluindo...'">Excluir</button>
+                </mat-action-row>
+            </div>
+        </div>
+    </form>
+</div>

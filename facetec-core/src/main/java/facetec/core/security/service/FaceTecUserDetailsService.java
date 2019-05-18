@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.NoResultException;
+
 /**
  * Created by rkogawa on 06/05/19.
  */
@@ -21,10 +23,11 @@ public class FaceTecUserDetailsService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        FaceTecUser user = dao.findBy(username);
-        if (user == null) {
+        try {
+            FaceTecUser user = dao.findBy(username);
+            return new FaceTecUserPrincipal(user);
+        } catch (NoResultException e) {
             throw new UsernameNotFoundException(username);
         }
-        return new FaceTecUserPrincipal(user);
     }
 }
