@@ -1,6 +1,7 @@
 package facetec.core.dao;
 
 import facetec.core.domain.Pessoa;
+import facetec.core.domain.enumx.InformacaoAcessoPessoa;
 import facetec.core.security.domain.FaceTecUser;
 import org.hibernate.Session;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,5 +81,15 @@ public class PessoaDAO {
         query.select(root);
         query.where(criteriaBuilder.equal(root.get("id"), id));
         return getSession().createQuery(query).getSingleResult();
+    }
+
+    public List<Pessoa> findBVisitantesBefore(LocalDateTime dataHoraExclusao) {
+        CriteriaBuilder criteriaBuilder = getSession().getCriteriaBuilder();
+        CriteriaQuery<Pessoa> query = criteriaBuilder.createQuery(Pessoa.class);
+        Root<Pessoa> root = query.from(Pessoa.class);
+        query.select(root);
+        query.where(criteriaBuilder.lessThan(root.get("dataHoraRegistro"), dataHoraExclusao), criteriaBuilder.equal(root.get("informacaoAcesso"),
+                InformacaoAcessoPessoa.VISITANTE));
+        return getSession().createQuery(query).list();
     }
 }
