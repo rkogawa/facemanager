@@ -6,31 +6,29 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-
-import javax.swing.*;
-import java.awt.*;
-import java.net.URI;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Created by rkogawa on 15/05/19.
  */
 @SpringBootApplication
 @ComponentScan({ "facetec" })
+@EnableScheduling
 public class ClientApplication extends Application implements CommandLineRunner {
     private ConfigurableApplicationContext springContext;
+
     private Parent rootNode;
+
     private FXMLLoader fxmlLoader;
 
-    @Value("${facetec.client.url}")
+    @Value("${facetec.client.url:https://www.facetec.tk/}")
     private String url;
 
     public static void main(String[] args) {

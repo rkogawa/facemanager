@@ -9,6 +9,8 @@ public class PessoaResponseVO {
 
     private Long dataHoraFim;
 
+    private Long integracaoId;
+
     private String foto;
 
     public Long getId() {
@@ -25,6 +27,14 @@ public class PessoaResponseVO {
 
     public void setDataHoraFim(Long dataHoraFim) {
         this.dataHoraFim = dataHoraFim;
+    }
+
+    public Long getIntegracaoId() {
+        return integracaoId;
+    }
+
+    public void setIntegracaoId(Long integracaoId) {
+        this.integracaoId = integracaoId;
     }
 
     public String getFoto() {

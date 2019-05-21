@@ -19,13 +19,13 @@ import { DateFormatPipe } from './shared/date-picker/date-format.pipe';
 import { FeedbackService } from './shared/feedback.service';
 import { SetupComponent } from './setup/setup.component';
 import { DeviceComponent } from './setup/device.component';
-import { DeviceService } from './services/device.service';
 import { AutocompleteComponent } from './shared/autocomplete/autocomplete.component';
 import { AsyncButtonDirective } from './services/async-button.directive';
 import { GrupoComponent } from './setup/grupo.component';
 import { MenuAdminComponent } from './menu/menu-admin.component';
 import { UsuarioComponent } from './usuarios/usuario.component';
 import { AuthGuardAdminService } from './services/auth-guard-admin.service';
+import { FeedbackIntegracaoDialogComponent } from './cadastros/feedback-integracao-dialog.component';
 
 @NgModule({
   imports: [
@@ -47,6 +47,7 @@ import { AuthGuardAdminService } from './services/auth-guard-admin.service';
     DatePickerComponent,
     DateFormatPipe,
     DeviceComponent,
+    FeedbackIntegracaoDialogComponent,
     GrupoComponent,
     LoginComponent,
     MenuAdminComponent,
@@ -54,13 +55,15 @@ import { AuthGuardAdminService } from './services/auth-guard-admin.service';
     SetupComponent,
     UsuarioComponent
   ],
+  entryComponents: [
+    FeedbackIntegracaoDialogComponent
+  ],
   bootstrap: [AppComponent],
   providers: [
     AuthGuardService,
     AuthGuardAdminService,
     CustomErrorHandler,
     DateFormatPipe,
-    DeviceService,
     FacetecService,
     FeedbackService
   ]

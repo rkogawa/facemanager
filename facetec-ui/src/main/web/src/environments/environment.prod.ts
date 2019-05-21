@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  baseUrl: window.location.protocol + '//' + window.location.host + '/facetec',
+  baseUrl: window.location.protocol + '//' + window.location.host,
 };

@@ -3,11 +3,12 @@ import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { FacetecService } from "../services/facetec.service";
 import { FeedbackService } from "../shared/feedback.service";
 import { Pessoa, PessoaResponse } from "./pessoa";
-import { DeviceService } from "../services/device.service";
 import { AsyncButtonDirective } from "../services/async-button.directive";
 import { finalize } from "rxjs/operators";
 import { WebcamUtil, WebcamImage } from "ngx-webcam";
 import { Subject, Observable } from "rxjs";
+import { MatDialog } from "@angular/material";
+import { FeedbackIntegracaoDialogComponent } from "./feedback-integracao-dialog.component";
 
 @Component({
     selector: 'app-cadastros',
@@ -56,7 +57,7 @@ export class CadastrosComponent {
     constructor(
         private fb: FormBuilder,
         private service: FacetecService,
-        private deviceService: DeviceService,
+        public dialog: MatDialog,
         private feedbackService: FeedbackService
     ) {
         this.formFoto = fb.group({
@@ -146,14 +147,18 @@ export class CadastrosComponent {
             ).subscribe(
                 success => {
                     this.feedbackService.showSuccessMessage('Registro cadastrado com sucesso. Iniciando envio da pessoa para aparelhos...');
-                    let pessoa = this.form.value;
-                    if (this.edicao) {
-                        pessoa['cpf'] = this.cpfPesquisa;
-                    }
+                    this.formFoto.get('useWebcam').setValue(false);
 
-                    this.deviceService.createUpdatePerson(pessoa, success, false);
-                    this.edicao = false;
-                    this.createForm(new Pessoa());
+                    const dialogRef = this.dialog.open(FeedbackIntegracaoDialogComponent, {
+                        width: '500px',
+                        data: { integracaoId: success.integracaoId },
+                    });
+
+                    dialogRef.afterClosed().subscribe(result => {
+                        if (result) {
+                            this.novo();
+                        }
+                    });
                 }
             );
     }
@@ -187,8 +192,17 @@ export class CadastrosComponent {
             ).subscribe(
                 result => {
                     this.feedbackService.showSuccessMessage('Registro excluído com sucesso.');
-                    this.deviceService.deletePerson(this.cpfPesquisa);
-                    this.novo();
+                    console.log('exclusao', result);
+                    const dialogRef = this.dialog.open(FeedbackIntegracaoDialogComponent, {
+                        width: '500px',
+                        data: { integracaoId: result },
+                    });
+
+                    dialogRef.afterClosed().subscribe(result => {
+                        if (result) {
+                            this.novo();
+                        }
+                    });
                 }
             )
     }

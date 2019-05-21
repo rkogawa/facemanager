@@ -2,8 +2,10 @@ package facetec.core.service;
 
 import facetec.core.dao.GrupoDAO;
 import facetec.core.dao.PessoaDAO;
+import facetec.core.domain.IntegracaoPessoa;
 import facetec.core.domain.Pessoa;
 import facetec.core.domain.enumx.InformacaoAcessoPessoa;
+import facetec.core.domain.enumx.StatusIntegracaoPessoa;
 import facetec.core.security.service.SecurityService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,9 @@ public class PessoaService {
     private SecurityService securityService;
 
     @Autowired
+    private IntegracaoPessoaService integracaoService;
+
+    @Autowired
     private PessoaDAO pessoaDAO;
 
     @Autowired
@@ -42,7 +47,7 @@ public class PessoaService {
     public PessoaResponseVO create(PessoaVO vo, MultipartFile foto) {
         Pessoa pessoa = new Pessoa();
         pessoa.setCpf(vo.getCpf());
-        return salvarPessoa(vo, foto, pessoa);
+        return salvarPessoa(vo, foto, pessoa, StatusIntegracaoPessoa.PENDENTE_INCLUSAO);
     }
 
     public PessoaResponseVO update(PessoaVO vo, MultipartFile fileFoto) {
@@ -50,10 +55,10 @@ public class PessoaService {
         if (pessoa == null) {
             throw new RuntimeException("Não foi encontrado pessoa com id " + vo.getId());
         }
-        return salvarPessoa(vo, fileFoto, pessoa);
+        return salvarPessoa(vo, fileFoto, pessoa, StatusIntegracaoPessoa.PENDENTE_ALTERACAO);
     }
 
-    private PessoaResponseVO salvarPessoa(PessoaVO vo, MultipartFile foto, Pessoa pessoa) {
+    private PessoaResponseVO salvarPessoa(PessoaVO vo, MultipartFile foto, Pessoa pessoa, StatusIntegracaoPessoa status) {
         pessoa.setNome(vo.getNome());
         pessoa.setTelefone(vo.getTelefone());
         pessoa.setCelular(vo.getCelular());
@@ -83,12 +88,14 @@ public class PessoaService {
 
         this.validarPessoa(pessoa);
         pessoaDAO.save(pessoa);
+        IntegracaoPessoa integracao = integracaoService.criarIntegracaoPessoa(pessoa, status);
 
         PessoaResponseVO responseVO = new PessoaResponseVO();
         if (pessoa.getDataHoraFim() != null) {
             responseVO.setDataHoraFim(Timestamp.valueOf(pessoa.getDataHoraFim()).getTime());
         }
         responseVO.setId(pessoa.getId());
+        responseVO.setIntegracaoId(integracao.getId());
         responseVO.setFoto(pessoa.getFoto());
         return responseVO;
     }
@@ -152,8 +159,9 @@ public class PessoaService {
         }
     }
 
-    public void delete(Long id) {
-        pessoaDAO.delete(id);
+    public Long delete(Long id) {
+        Pessoa pessoa = pessoaDAO.findById(id);
+        return integracaoService.criarIntegracaoPessoa(pessoa, StatusIntegracaoPessoa.PENDENTE_EXCLUSAO).getId();
     }
 
 }

@@ -233,3 +233,47 @@ databaseChangeLog:
                   name: COD_USER
             indexName: IX_GRUPO_0
             tableName: GRUPO
+- changeSet:
+    id: 12
+    author: rkogawa
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              primaryKey: true
+              primaryKeyName: PK_INTEGRACAO_PESSOA
+            name: COD_INTEGRACAO_PESSOA
+            type: java.sql.Types.BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: STATUS
+            type: java.sql.Types.INTEGER
+        - column:
+            constraints:
+              foreignKeyName: FK_INTPES_PESSOA
+              references: PESSOA(COD_PESSOA)
+            name: COD_PESSOA
+            type: java.sql.Types.BIGINT
+        - column:
+            name: LOG_INTEGRACAO
+            type: java.sql.Types.CLOB
+        tableName: INTEGRACAO_PESSOA
+- changeSet:
+    id: 13
+    author: rkogawa
+    changes:
+    - createSequence:
+        incrementBy: 1
+        sequenceName: SEQ_INTEGRACAO_PESSOA
+- changeSet:
+      id: 14
+      author: rkogawa
+      changes:
+      - createIndex:
+            columns:
+            - column:
+                  name: COD_PESSOA
+            indexName: IX_INTEGRACAO_PESSOA_0
+            tableName: INTEGRACAO_PESSOA

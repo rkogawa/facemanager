@@ -24,6 +24,9 @@ public class ExclusaoVisitanteTask {
     @Autowired
     private PessoaDAO pessoaDAO;
 
+    @Autowired
+    private PessoaService service;
+
     @Value("${facetec.exclusao.visitante.dias:15}")
     private int diasParaExclusao;
 
@@ -33,7 +36,7 @@ public class ExclusaoVisitanteTask {
         LocalDateTime dataHoraExclusaoFormatada = LocalDateTime.now().minusDays(diasParaExclusao);
         List<Pessoa> visitantes = pessoaDAO.findBVisitantesBefore(dataHoraExclusaoFormatada);
         LOG.info(String.format("Serão excluído(s) %s visitante(s) cadastrado(s) antes de %s.", visitantes.size(), dataHoraExclusaoFormatada));
-        visitantes.forEach(p -> pessoaDAO.delete(p.getId()));
+        visitantes.forEach(p -> service.delete(p.getId()));
     }
 
 }

@@ -19,6 +19,11 @@ export class Pessoa {
 
 export class PessoaResponse {
     id: number;
+    integracaoId: number;
     dataHoraFim: number;
     foto: string;
+}
+
+export class IntegracaoPessoa {
+    status: string;
 }

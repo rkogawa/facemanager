@@ -1,8 +1,7 @@
 import { Component, ViewChild, OnInit } from "@angular/core";
-import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import { FormGroup, FormBuilder, Validators, FormArray } from "@angular/forms";
 import { FacetecService } from "../services/facetec.service";
 import { FeedbackService } from "../shared/feedback.service";
-import { DeviceService } from "../services/device.service";
 import { MatTableDataSource } from "@angular/material";
 import { Device } from "./device";
 import { finalize, max } from "rxjs/operators";
@@ -16,34 +15,29 @@ import { AsyncButtonDirective } from "../services/async-button.directive";
 export class DeviceComponent implements OnInit {
 
     backendPath = 'device';
-    formPesquisa: FormGroup;
     form: FormGroup;
     devices: Array<Device> = [];
 
     dataSource = new MatTableDataSource();
 
-    @ViewChild('btnPesquisar') btnPesquisar: AsyncButtonDirective;
     @ViewChild('btnSalvar') btnSalvar: AsyncButtonDirective;
-    ipVerificado: string;
 
-    displayedColumns = ['ip', 'nome', 'classificacao'];
+    displayedColumns = ['ip', 'nome', 'classificacao', 'remove'];
     constructor(
         private fb: FormBuilder,
-        private deviceService: DeviceService,
-        private feedbackService: FeedbackService
+        private feedbackService: FeedbackService,
+        private service: FacetecService
     ) {
     }
 
     ngOnInit() {
-        this.formPesquisa = this.fb.group({
-            dominio: ''
-        })
+        this.dataSource = new MatTableDataSource(this.devices);
         this.form = this.fb.group({
             adminPassword: ['', Validators.required],
             devices: []
         })
 
-        this.deviceService.getDevices().subscribe(devices => {
+        this.service.get<Device[]>('device').subscribe(devices => {
             this.devices = devices;
             this.updateDevices(this.devices);
         });
@@ -53,57 +47,40 @@ export class DeviceComponent implements OnInit {
         this.dataSource = new MatTableDataSource(devices);
         const devicesFGs = [];
         devices.forEach(device => {
-            devicesFGs.push(this.fb.group({
-                ip: device.ip,
-                nome: device.nome,
-                classificacao: device.classificacao
-            }));
+            devicesFGs.push(this.createDeviceFormGroup(device));
         });
         this.form.setControl('devices', this.fb.array(devicesFGs));
     }
 
-    private getOrCreateDevice(ip: string) {
-        for (let i = 0; i < this.devices.length; i++) {
-            if (this.devices[i].ip === ip) {
-                return this.devices[i];
-            }
-        }
-        const device = new Device();
-        device.ip = ip;
-        return device;
+    private createDeviceFormGroup(device: Device) {
+        return this.fb.group({
+            ip: device.ip,
+            nome: device.nome,
+            classificacao: device.classificacao
+        })
     }
 
-    pesquisar() {
-        let countIpsVerificados = 0;
-        const maxIp = 256;
-        const devices = [];
-        this.btnPesquisar.wait();
-        for (let i = 0; i < maxIp; i++) {
-            const ip = `${this.formPesquisa.get('dominio').value}.${i}`;
+    novo() {
+        const devices = <FormArray>this.form.controls['devices'];
+        devices.push(this.createDeviceFormGroup(new Device()));
+        this.dataSource = new MatTableDataSource(devices.value);
+    }
 
-            this.deviceService.getDeviceKey(ip)
-                .pipe(
-                    finalize(() => {
-                        this.ipVerificado = ip;
-                        countIpsVerificados++;
-                        if (countIpsVerificados === maxIp) {
-                            this.updateDevices(devices);
-                            this.btnPesquisar.release();
-                            if (devices.length === 0) {
-                                this.feedbackService.showErrorMessage('Não foi encontrado nenhum aparelho para este domínio.');
-                            }
-                        }
-                    })
-                ).subscribe(
-                    success => {
-                        devices.push(this.getOrCreateDevice(ip));
-                    }
-                )
-        }
+    excluir(index: number) {
+        const devices = <FormArray>this.form.controls['devices'];
+        devices.removeAt(index);
+        this.dataSource = new MatTableDataSource(devices.value);
     }
 
     salvar() {
         this.btnSalvar.wait();
-        this.deviceService.saveDevices(this.form.value, this.btnSalvar);
+        this.service.create(this.backendPath, this.form.value)
+            .pipe(
+                finalize(() => this.btnSalvar.release())
+            ).subscribe(
+                success => {
+                    this.feedbackService.showSuccessMessage('Registro cadastrado com sucesso.');
+                }
+            );
     }
 }

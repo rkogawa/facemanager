@@ -46,8 +46,8 @@ public class PessoaRestController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable Long id) {
-        service.delete(id);
+    public Long delete(@PathVariable Long id) {
+        return service.delete(id);
     }
 
 }

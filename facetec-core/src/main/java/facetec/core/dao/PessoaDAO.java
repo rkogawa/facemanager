@@ -70,8 +70,8 @@ public class PessoaDAO {
         return getSession().createQuery(query).getSingleResult() > 0L;
     }
 
-    public void delete(Long id) {
-        getSession().delete(entityManager.getReference(Pessoa.class, id));
+    public void delete(Pessoa pessoa) {
+        getSession().delete(pessoa);
     }
 
     public Pessoa findById(Long id) {
