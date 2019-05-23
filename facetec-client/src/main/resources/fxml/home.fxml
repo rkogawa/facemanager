@@ -15,7 +15,7 @@
 
         <ImageView
                 fx:id="imageView"
-                fitWidth="600.0"
+                fitHeight="600.0"
                 pickOnBounds="true"
                 preserveRatio="true"
         >

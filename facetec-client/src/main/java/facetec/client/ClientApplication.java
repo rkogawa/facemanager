@@ -1,5 +1,6 @@
 package facetec.client;
 
+import facetec.client.controller.ClientController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -7,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,6 +24,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @ComponentScan({ "facetec" })
 @EnableScheduling
 public class ClientApplication extends Application implements CommandLineRunner {
+
     private ConfigurableApplicationContext springContext;
 
     private Parent rootNode;
@@ -30,6 +33,9 @@ public class ClientApplication extends Application implements CommandLineRunner 
 
     @Value("${facetec.client.url:https://www.facetec.tk/}")
     private String url;
+
+    @Autowired
+    private ClientController clientController;
 
     public static void main(String[] args) {
         launch(args);
@@ -49,13 +55,12 @@ public class ClientApplication extends Application implements CommandLineRunner 
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        fxmlLoader.setLocation(getClass().getResource("/fxml/sample.fxml"));
+        fxmlLoader.setLocation(getClass().getResource("/fxml/login.fxml"));
         rootNode = fxmlLoader.load();
 
         primaryStage.getIcons().add(new Image("facetec_logo_branco.jpg"));
-
         primaryStage.setTitle("FACETEC - Interface FTCA-888");
-        Scene scene = new Scene(rootNode, 600, 420);
+        Scene scene = new Scene(rootNode, 900, 600);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -66,4 +71,5 @@ public class ClientApplication extends Application implements CommandLineRunner 
         Platform.exit();
         System.exit(0);
     }
+
 }

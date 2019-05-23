@@ -20,10 +20,13 @@ public class IntegracaoAparelhoTask {
     @Autowired
     private ClientDeviceService service;
 
+    @Autowired
+    private FacetecClientService clientService;
+
     @Scheduled(cron = "*/10 * * * * *")
     public void executeTask() {
         StringBuilder logIntegracao = new StringBuilder();
-        service.getPessoasPendentes().forEach(i -> {
+        clientService.getPessoasPendentes().forEach(i -> {
             final ResponseTask response = new ResponseTask();
             response.setId((String) i.get("id"));
             response.setSuccess(true);
@@ -45,7 +48,7 @@ public class IntegracaoAparelhoTask {
                 }
             });
 
-            service.updateIntegracao(response.getId(), response.isSuccess(), logIntegracao.toString());
+            clientService.updateIntegracao(response.getId(), response.isSuccess(), logIntegracao.toString());
         });
     }
 
