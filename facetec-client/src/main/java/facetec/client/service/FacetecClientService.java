@@ -3,6 +3,7 @@ package facetec.client.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import facetec.client.controller.ClientController;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -54,6 +56,9 @@ public class FacetecClientService {
     }
 
     public List<Map<String, Object>> getPessoasPendentes() {
+        if (StringUtils.isEmpty(this.controller.getCurrentUser())) {
+            return new ArrayList<>();
+        }
         try {
             String pendenteIntegracao = findPessoasPendenteIntegracao();
             return new ObjectMapper().readValue(pendenteIntegracao, new TypeReference<List<Map<String, Object>>>() {});

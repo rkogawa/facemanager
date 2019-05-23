@@ -32,7 +32,7 @@ public class IntegracaoPessoaRestController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public void updateIntegracao(@PathVariable Long id, @RequestBody Map<String, Object> params) {
-        service.updateIntegracao(id, (Boolean) params.get("success"), "Pendente envio do log.");
+        service.updateIntegracao(id, (Boolean) params.get("success"), null);
     }
 
     @RequestMapping(value = "/status/{id}", method = RequestMethod.GET)
