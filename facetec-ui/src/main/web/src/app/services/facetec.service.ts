@@ -4,18 +4,21 @@ import { catchError, map } from 'rxjs/operators';
 import { HttpClient, HttpParams, HttpHeaders } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import { CustomErrorHandler } from "../error/custom-error-interceptor";
-import { Router } from "@angular/router";
+import { Router, ActivatedRoute } from "@angular/router";
+import { JwtHelperService } from "@auth0/angular-jwt";
 
 @Injectable()
 export class FacetecService {
 
   private baseUrl = environment.baseUrl;
 
-  constructor(private httpClient: HttpClient, private customErrorHandler: CustomErrorHandler, private router: Router) {
+  jwtHelper = new JwtHelperService();
+
+  constructor(private httpClient: HttpClient, private customErrorHandler: CustomErrorHandler, private router: Router, private activatedRoute: ActivatedRoute) {
   }
 
   public login(user: string, password: string): Observable<any> {
-    return this.httpClient.post<any>(`${this.baseUrl}/login`, { username: user, password: password },
+    return this.httpClient.post<any>(`${this.baseUrl}/welcome`, { username: user, password: password },
       { ...this.getOptions(), observe: 'response' as 'response' }).pipe(
         catchError(this.handleError('login', null)));
   }
@@ -36,9 +39,7 @@ export class FacetecService {
     try {
       const until = sessionStorage.getItem('validUntil');
       ret = until === null ? false : new Date().getTime() <= Number.parseFloat(until);
-      if (!ret && !this.router.isActive('login', true)) {
-        this.logout();
-      }
+      return ret;
     } finally {
       return ret;
     }
@@ -48,10 +49,26 @@ export class FacetecService {
     return sessionStorage.getItem('user');
   }
 
+  public afterAuthenticated(token: string) {
+    const tokenDecoded = this.jwtHelper.decodeToken(token);
+
+    sessionStorage.setItem('token', token);
+    sessionStorage.setItem('validUntil', this.jwtHelper.getTokenExpirationDate(token).getTime().toString());
+    sessionStorage.setItem('user', tokenDecoded.sub);
+    sessionStorage.setItem('image', tokenDecoded.GROUP);
+    sessionStorage.setItem('admin', tokenDecoded.Admin);
+    if (tokenDecoded.Admin) {
+      this.router.navigate(['usuarios']);
+    } else {
+      this.router.navigate(['cadastros']);
+    }
+  }
+
   public logout() {
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('user');
     sessionStorage.removeItem('validUntil');
+    sessionStorage.setItem('logout', 'true');
     this.router.navigate(['login'], { skipLocationChange: true });
   }
 

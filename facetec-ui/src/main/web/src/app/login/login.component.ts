@@ -18,7 +18,6 @@ export class LoginComponent {
     private router: Router,
     private feedbackService: FeedbackService) { }
 
-  jwtHelper = new JwtHelperService();
   username: string;
   password: string;
 
@@ -34,18 +33,7 @@ export class LoginComponent {
           this.feedbackService.showErrorMessage(resp.headers.get('Failure'));
         } else {
           const token = resp.headers.get('Authorization');
-          const tokenDecoded = this.jwtHelper.decodeToken(token);
-
-          sessionStorage.setItem('token', token);
-          sessionStorage.setItem('validUntil', this.jwtHelper.getTokenExpirationDate(token).getTime().toString());
-          sessionStorage.setItem('user', tokenDecoded.sub);
-          sessionStorage.setItem('image', tokenDecoded.GROUP);
-          sessionStorage.setItem('admin', tokenDecoded.Admin);
-          if (tokenDecoded.Admin) {
-            this.router.navigate(['usuarios']);
-          } else {
-            this.router.navigate(['cadastros']);
-          }
+          this.service.afterAuthenticated(token);
         }
       });
   }

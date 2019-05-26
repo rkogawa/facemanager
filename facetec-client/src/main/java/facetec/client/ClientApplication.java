@@ -31,19 +31,22 @@ public class ClientApplication extends Application implements CommandLineRunner 
 
     private FXMLLoader fxmlLoader;
 
-    @Value("${facetec.client.url:https://www.facetec.tk/}")
-    private String url;
+    private static ClientApplication app;
 
-    @Autowired
-    private ClientController clientController;
+    public ClientApplication() {
+        app = this;
+    }
 
     public static void main(String[] args) {
         launch(args);
     }
 
+    public static ClientApplication getInstance() {
+        return app;
+    }
+
     @Override
     public void run(String... args) {
-        getHostServices().showDocument(url);
     }
 
     @Override

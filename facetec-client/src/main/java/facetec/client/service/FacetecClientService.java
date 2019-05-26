@@ -31,19 +31,17 @@ public class FacetecClientService {
     @Autowired
     private ClientController controller;
 
-    public String login(String usuario, String senha) {
+    public CloseableHttpResponse login(String usuario, String senha) {
         CloseableHttpClient client = HttpClients.createDefault();
 
         try {
-            HttpPost httpPost = new HttpPost(facetecServerUrl + "login");
+            HttpPost httpPost = new HttpPost(facetecServerUrl + "welcome");
             StringEntity entity = new StringEntity("{ \"username\": \"" + usuario + "\", \"password\": \"" + senha + "\" }");
             httpPost.setEntity(entity);
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
 
-            CloseableHttpResponse response = client.execute(httpPost);
-            Header[] headers = response.getHeaders("Failure");
-            return headers.length > 0 ? headers[0].getValue() : null;
+            return client.execute(httpPost);
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {

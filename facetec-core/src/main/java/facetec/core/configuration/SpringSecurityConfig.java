@@ -46,7 +46,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint((req, rsp, e) -> rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED));
         http.headers().frameOptions().sameOrigin();
         http.csrf().disable()
-                .addFilterBefore(new JWTLoginFilter("/login", authenticationManager(), service), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JWTLoginFilter("/welcome", authenticationManager(), service), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(new JWTAuthenticationFilter(service), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests().
                 antMatchers("/monitoring").permitAll()
