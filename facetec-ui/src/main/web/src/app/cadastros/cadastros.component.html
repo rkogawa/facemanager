@@ -1,15 +1,15 @@
 <h3 class="page-header">Cadastros</h3>
 <div class="row">
     <form [formGroup]="formFoto">
-        <div class="col-md-4 order-md-2 mb-4">
+        <div class="col-md-6 order-md-2 mb-4">
             <ul *ngIf="imageSrc" class="list-group mb-3">
-                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                <li class="d-flex justify-content-between lh-condensed">
                     <img id="foto" class="foto-image" [src]="imageSrc" alt="your image" />
                 </li>
             </ul>
 
             <ul *ngIf="!imageSrc && formFoto.get('useWebcam').value" class="list-group mb-3">
-                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                <li class="d-flex justify-content-between lh-condensed">
                     <webcam [width]="480" [trigger]="triggerObservable" (imageCapture)="handleImage($event)"></webcam>
                 </li>
             </ul>
@@ -37,7 +37,7 @@
     </form>
 
     <form [formGroup]="form">
-        <div class="col-md-4 order-md-1">
+        <div class="col-md-3 order-md-1">
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <mat-form-field>
@@ -76,9 +76,9 @@
             </div>
         </div>
 
-        <div class="col-md-4 order-md-2">
+        <div class="col-md-3 col-md-4 order-md-2">
             <div class="row">
-                <div class="col-md-6 mb-3">
+                <div class="col-md-12 mb-3">
                     <label id="info-radio-group-label">Informação de acesso *</label>
                     <mat-radio-group aria-labelledby="info-radio-group-label" class="info-radio-group"
                         formControlName="informacaoAcesso">

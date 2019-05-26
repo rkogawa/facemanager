@@ -44,21 +44,21 @@ public class PessoaService {
     @Autowired
     private GrupoDAO grupoDAO;
 
-    public PessoaResponseVO create(PessoaVO vo, MultipartFile foto) {
+    public PessoaResponseVO create(PessoaVO vo) {
         Pessoa pessoa = new Pessoa();
         pessoa.setCpf(vo.getCpf());
-        return salvarPessoa(vo, foto, pessoa, StatusIntegracaoPessoa.PENDENTE_INCLUSAO);
+        return salvarPessoa(vo, pessoa, StatusIntegracaoPessoa.PENDENTE_INCLUSAO);
     }
 
-    public PessoaResponseVO update(PessoaVO vo, MultipartFile fileFoto) {
+    public PessoaResponseVO update(PessoaVO vo) {
         Pessoa pessoa = pessoaDAO.findById(vo.getId());
         if (pessoa == null) {
             throw new RuntimeException("Não foi encontrado pessoa com id " + vo.getId());
         }
-        return salvarPessoa(vo, fileFoto, pessoa, StatusIntegracaoPessoa.PENDENTE_ALTERACAO);
+        return salvarPessoa(vo, pessoa, StatusIntegracaoPessoa.PENDENTE_ALTERACAO);
     }
 
-    private PessoaResponseVO salvarPessoa(PessoaVO vo, MultipartFile foto, Pessoa pessoa, StatusIntegracaoPessoa status) {
+    private PessoaResponseVO salvarPessoa(PessoaVO vo, Pessoa pessoa, StatusIntegracaoPessoa status) {
         pessoa.setNome(vo.getNome());
         pessoa.setTelefone(vo.getTelefone());
         pessoa.setCelular(vo.getCelular());
@@ -74,17 +74,7 @@ public class PessoaService {
         pessoa.setDataHoraRegistro(LocalDateTime.now());
         pessoa.setComentario(vo.getComentario());
         pessoa.setPredio(securityService.getUser());
-        if (foto != null) {
-            try {
-                // XXX Verificar se vai ser necessario
-                // byte[] fotoResize = this.resize(foto.getBytes(), 640, 480);
-                pessoa.setFoto(Base64.getEncoder().encodeToString(foto.getBytes()));
-            } catch (IOException e) {
-                throw new RuntimeException(String.format("Erro ao converter foto para Base64. %s", e.getMessage()), e);
-            }
-        } else {
-            pessoa.setFoto(vo.getFoto());
-        }
+        pessoa.setFoto(vo.getFoto());
 
         this.validarPessoa(pessoa);
         pessoaDAO.save(pessoa);
@@ -114,10 +104,10 @@ public class PessoaService {
         }
     }
 
-    private byte[] resize(byte[] foto, int scaledWidth, int scaledHeight)
+    public PessoaResponseVO resize(MultipartFile foto, int scaledWidth, int scaledHeight)
             throws IOException {
         // reads input image
-        BufferedImage inputImage = ImageIO.read(new ByteArrayInputStream(foto));
+        BufferedImage inputImage = ImageIO.read(new ByteArrayInputStream(foto.getBytes()));
 
         // creates output image
         BufferedImage outputImage = new BufferedImage(scaledWidth, scaledHeight, inputImage.getType());
@@ -130,7 +120,9 @@ public class PessoaService {
         // writes to output file
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         ImageIO.write(outputImage, "jpeg", os);
-        return os.toByteArray();
+        PessoaResponseVO vo = new PessoaResponseVO();
+        vo.setFoto(Base64.getEncoder().encodeToString(os.toByteArray()));
+        return vo;
     }
 
     public PessoaVO findByCpf(String cpf) {

@@ -117,14 +117,15 @@ export class CadastrosComponent {
         if (target.files && target.files[0]) {
             const file = target.files[0];
 
-            this.form.get('fileFoto').setValue(file);
-            const reader = new FileReader();
-            reader.onload = e => {
-                this.imageSrc = reader.result as string;
-                this.form.get('foto').setValue(this.imageSrc);
-            }
+            const formData: FormData = new FormData();
+            formData.append('foto', file, file.name);
 
-            reader.readAsDataURL(file);
+            this.service.resize<any, PessoaResponse>(this.backendPath, formData).subscribe(
+                success => {
+                    this.form.get('foto').setValue(success.foto);
+                    this.imageSrc = `data:image/jpeg;base64,${success.foto}`;
+                }
+            )
         }
     }
 

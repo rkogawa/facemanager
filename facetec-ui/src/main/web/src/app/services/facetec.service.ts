@@ -84,6 +84,12 @@ export class FacetecService {
     );
   }
 
+  public resize<I, O>(path: string, param: I): Observable<O> {
+    return this.httpClient.post<O>(`${this.baseUrl}/${path}/resize`, param, this.getOptions()).pipe(
+      catchError(this.handleError('resize', null))
+    );
+  }
+
   public get<T>(path: string, params?: any): Observable<T> {
     return this.httpClient.get<T>(`${this.baseUrl}/${path}`, this.getOptions(params)).pipe(
       catchError(this.handleError('get', null))

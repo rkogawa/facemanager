@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -27,17 +28,20 @@ public class PessoaRestController {
     private PessoaService service;
 
     @RequestMapping(method = RequestMethod.POST)
-    public PessoaResponseVO create(@RequestParam Map<String, Object> params, @RequestParam(required = false) MultipartFile fileFoto) {
-        params.remove("fileFoto");
+    public PessoaResponseVO create(@RequestParam Map<String, Object> params) {
         PessoaVO pessoa = new ObjectMapper().convertValue(params, PessoaVO.class);
-        return service.create(pessoa, fileFoto);
+        return service.create(pessoa);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/resize")
+    public PessoaResponseVO resize(@RequestParam(required = false) MultipartFile foto) throws IOException {
+        return service.resize(foto, 640, 480);
     }
 
     @RequestMapping(method = RequestMethod.PUT)
-    public PessoaResponseVO update(@RequestParam Map<String, Object> params, @RequestParam(required = false) MultipartFile fileFoto) {
-        params.remove("fileFoto");
+    public PessoaResponseVO update(@RequestParam Map<String, Object> params) {
         PessoaVO pessoa = new ObjectMapper().convertValue(params, PessoaVO.class);
-        return service.update(pessoa, fileFoto);
+        return service.update(pessoa);
     }
 
     @RequestMapping(value = "/{cpf}", method = RequestMethod.GET)
