@@ -1,6 +1,5 @@
 package facetec.client;
 
-import facetec.client.controller.ClientController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -8,8 +7,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -25,11 +22,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class ClientApplication extends Application implements CommandLineRunner {
 
-    private ConfigurableApplicationContext springContext;
+    private static ConfigurableApplicationContext springContext;
 
-    private Parent rootNode;
-
-    private FXMLLoader fxmlLoader;
+    private static Parent rootNode;
 
     private static ClientApplication app;
 
@@ -52,20 +47,24 @@ public class ClientApplication extends Application implements CommandLineRunner 
     @Override
     public void init() throws Exception {
         springContext = new SpringApplicationBuilder(ClientApplication.class).headless(true).run();
-        fxmlLoader = new FXMLLoader();
-        fxmlLoader.setControllerFactory(springContext::getBean);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        fxmlLoader.setLocation(getClass().getResource("/fxml/login.fxml"));
-        rootNode = fxmlLoader.load();
+        rootNode = fxmlLoader("/fxml/login.fxml");
 
         primaryStage.getIcons().add(new Image("facetec_logo_branco.jpg"));
         primaryStage.setTitle("FACETEC - Interface FTCA-888");
         Scene scene = new Scene(rootNode, 900, 600);
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    public Parent fxmlLoader(String resource) throws java.io.IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setControllerFactory(springContext::getBean);
+        fxmlLoader.setLocation(getClass().getResource(resource));
+        return fxmlLoader.load();
     }
 
     @Override

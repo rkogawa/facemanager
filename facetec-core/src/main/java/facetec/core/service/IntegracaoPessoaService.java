@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import facetec.core.dao.DeviceDAO;
 import facetec.core.dao.IntegracaoPessoaDAO;
 import facetec.core.dao.PessoaDAO;
+import facetec.core.domain.Device;
 import facetec.core.domain.IntegracaoPessoa;
 import facetec.core.domain.Pessoa;
 import facetec.core.domain.enumx.StatusIntegracaoPessoa;
@@ -71,11 +72,18 @@ public class IntegracaoPessoaService {
         }).collect(Collectors.toList());
 
         if (!integracoes.isEmpty()) {
-            List<String> devicesUrl =
-                    deviceDAO.findBy(usuario).stream().map(d -> String.format(deviceBaseUrl, d.getIp())).collect(Collectors.toList());
+            List<String> devicesUrl = getBaseUrlDevices(usuario);
             integracoes.forEach(i -> i.setDevices(devicesUrl));
         }
         return integracoes;
+    }
+
+    private List<String> getBaseUrlDevices(String usuario) {
+        return deviceDAO.findBy(usuario).stream().map(d -> getUrl(d)).collect(Collectors.toList());
+    }
+
+    private String getUrl(Device d) {
+        return String.format(deviceBaseUrl, d.getIp());
     }
 
     private StatusIntegracaoPessoa createRequestInclusao(IntegracaoPessoaVO integracaoVO, Pessoa pessoa) {
@@ -180,5 +188,19 @@ public class IntegracaoPessoaService {
 
     public StatusIntegracaoPessoaVO getStatus(Long id) {
         return new StatusIntegracaoPessoaVO(dao.findById(id).getStatus().name());
+    }
+
+    public IntegracaoDevicesVO findDevices(String usuario) {
+        IntegracaoDevicesVO vo = new IntegracaoDevicesVO();
+        vo.setDevices(deviceDAO.findBy(usuario).stream().map(d -> {
+            IntegracaoDeviceVO device = new IntegracaoDeviceVO();
+            device.setIp(d.getIp());
+            device.setNome(d.getNome());
+            device.setUrl(getUrl(d));
+            return device;
+        }).collect(Collectors.toList()));
+
+        vo.setRequestPath("getDeviceKey");
+        return vo;
     }
 }

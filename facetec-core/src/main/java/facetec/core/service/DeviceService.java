@@ -43,7 +43,11 @@ public class DeviceService {
     }
 
     public List<DeviceVO> findDevices() {
-        return dao.findBy(securityService.getUser()).stream().map(d -> {
+        return findDevices(securityService.getCurrentUser());
+    }
+
+    public List<DeviceVO> findDevices(String usuario) {
+        return dao.findBy(usuario).stream().map(d -> {
             DeviceVO deviceVO = new DeviceVO();
             deviceVO.setIp(d.getIp());
             deviceVO.setNome(d.getNome());
@@ -51,5 +55,4 @@ public class DeviceService {
             return deviceVO;
         }).collect(Collectors.toList());
     }
-
 }

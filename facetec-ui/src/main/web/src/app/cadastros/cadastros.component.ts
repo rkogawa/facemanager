@@ -96,6 +96,7 @@ export class CadastrosComponent {
 
     public novaFoto(): void {
         this.imageSrc = null;
+        this.form.get('foto').setValue(null);
     }
 
     public handleImage(webcamImage: WebcamImage): void {

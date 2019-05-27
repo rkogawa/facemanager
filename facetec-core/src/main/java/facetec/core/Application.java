@@ -27,6 +27,8 @@ public class Application extends SpringBootServletInitializer {
 
     static {
         System.setProperty("spring.liquibase.changeLog", "classpath:/liquibase/db.changelog.yaml");
+        System.setProperty("spring.servlet.multipart.max-file-size", "10MB");
+        System.setProperty("spring.servlet.multipart.max-request-size", "10MB");
     }
 
     public static void main(String[] args) {

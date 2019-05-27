@@ -1,5 +1,6 @@
 package facetec.core.controller;
 
+import facetec.core.service.IntegracaoDevicesVO;
 import facetec.core.service.IntegracaoPessoaService;
 import facetec.core.service.IntegracaoPessoaVO;
 import facetec.core.service.integracao.StatusIntegracaoPessoaVO;
@@ -38,5 +39,10 @@ public class IntegracaoPessoaRestController {
     @RequestMapping(value = "/status/{id}", method = RequestMethod.GET)
     public StatusIntegracaoPessoaVO getStatus(@PathVariable Long id) {
         return service.getStatus(id);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/devices/{usuario}")
+    public IntegracaoDevicesVO findDevices(@PathVariable String usuario) {
+        return service.findDevices(usuario);
     }
 }

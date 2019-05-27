@@ -49,6 +49,7 @@ public class DeviceDAO {
         Join<Device, FaceTecUser> join = root.join("predio");
         query.select(root);
         query.where(criteriaBuilder.equal(join.get("username"), user));
+        query.orderBy(criteriaBuilder.asc(root.get("ip")));
         return getSession().createQuery(query).list();
     }
 

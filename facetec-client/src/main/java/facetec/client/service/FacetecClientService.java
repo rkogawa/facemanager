@@ -2,9 +2,8 @@ package facetec.client.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import facetec.client.controller.ClientController;
+import facetec.client.controller.ClientLoginController;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.Header;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -29,7 +28,7 @@ public class FacetecClientService {
     private String facetecServerUrl;
 
     @Autowired
-    private ClientController controller;
+    private ClientLoginController controller;
 
     public CloseableHttpResponse login(String usuario, String senha) {
         CloseableHttpClient client = HttpClients.createDefault();
@@ -58,8 +57,17 @@ public class FacetecClientService {
             return new ArrayList<>();
         }
         try {
-            String pendenteIntegracao = findPessoasPendenteIntegracao();
+            String pendenteIntegracao = get("integracaoPessoa/pendentes/" + controller.getCurrentUser());
             return new ObjectMapper().readValue(pendenteIntegracao, new TypeReference<List<Map<String, Object>>>() {});
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Map<String, Object> getDevices() {
+        try {
+            String pendenteIntegracao = get("integracaoPessoa/devices/" + controller.getCurrentUser());
+            return new ObjectMapper().readValue(pendenteIntegracao, new TypeReference<Map<String, Object>>() {});
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -86,10 +94,10 @@ public class FacetecClientService {
         }
     }
 
-    private String findPessoasPendenteIntegracao() {
+    private String get(String path) {
         CloseableHttpClient client = HttpClients.createDefault();
         try {
-            HttpGet httpGet = new HttpGet(facetecServerUrl + "integracaoPessoa/pendentes/" + controller.getCurrentUser());
+            HttpGet httpGet = new HttpGet(facetecServerUrl + path + "/");
             CloseableHttpResponse response = client.execute(httpGet);
             return EntityUtils.toString(response.getEntity());
         } catch (Exception e) {

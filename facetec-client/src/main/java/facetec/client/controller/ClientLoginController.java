@@ -4,15 +4,9 @@ import facetec.client.ClientApplication;
 import facetec.client.service.FacetecClientService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.JavaFXBuilderFactory;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import org.apache.http.Header;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +16,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 
 @Service
-public class ClientController {
+public class ClientLoginController {
 
     private String currentUser;
 
@@ -40,6 +34,9 @@ public class ClientController {
     @Value("${facetec.client.url:https://www.facetec.tk/}")
     private String url;
 
+    @Autowired
+    private ClientHomeController clientHomeController;
+
     @FXML protected void handleSubmitButtonAction(ActionEvent event) {
         CloseableHttpResponse response = service.login(usuarioField.getText(), passwordField.getText());
         Header[] headers = response.getHeaders("Failure");
@@ -50,10 +47,7 @@ public class ClientController {
             currentUser = usuarioField.getText();
             String token = response.getHeaders("Authorization")[0].getValue();
             try {
-                Parent page = FXMLLoader.load(ClientApplication.class.getResource("/fxml/home.fxml"), null, new JavaFXBuilderFactory());
-                Stage currentStage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-                currentStage.setScene(new Scene(page, 823, 600));
-                currentStage.show();
+                clientHomeController.loadHome(event);
 
                 ClientApplication.getInstance().getHostServices().showDocument(url + "?token="+token);
             } catch (IOException e) {

@@ -109,6 +109,10 @@ public class PessoaService {
         // reads input image
         BufferedImage inputImage = ImageIO.read(new ByteArrayInputStream(foto.getBytes()));
 
+        if (inputImage == null) {
+            throw new RuntimeException("O arquivo importado não é uma imagem. Favor importar apenas imagens no campo foto.");
+        }
+
         // creates output image
         BufferedImage outputImage = new BufferedImage(scaledWidth, scaledHeight, inputImage.getType());
 
