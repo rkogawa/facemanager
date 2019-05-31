@@ -3,13 +3,13 @@
     <groupId>facetec</groupId>
     <artifactId>facetec-client</artifactId>
     <name>FaceTec - Client</name>
-    <version>1.2.0</version>
+    <version>1.3.0</version>
     <packaging>jar</packaging>
 
     <parent>
         <groupId>facetec</groupId>
         <artifactId>facetec-versions</artifactId>
-        <version>1.2.0</version>
+        <version>1.3.0</version>
         <relativePath>../facetec-versions/pom.xml</relativePath>
     </parent>
 
