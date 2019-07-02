@@ -4,4 +4,5 @@ export class Usuario {
     password: string;
     admin: boolean;
     changePassword: boolean;
+    localidade: string;
 }

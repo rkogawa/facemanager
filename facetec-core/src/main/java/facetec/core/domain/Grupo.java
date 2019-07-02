@@ -1,6 +1,6 @@
 package facetec.core.domain;
 
-import facetec.core.security.domain.FaceTecUser;
+import facetec.core.security.domain.LocalidadeUsuario;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,8 +30,8 @@ public class Grupo {
     private String nome;
 
     @ManyToOne
-    @JoinColumn(name = "COD_USER", nullable = false, foreignKey = @ForeignKey(name = "FK_PESSOA_USER"))
-    private FaceTecUser predio;
+    @JoinColumn(name = "COD_LOCALIDADE_USUARIO", nullable = false, foreignKey = @ForeignKey(name = "FK_GRUPO_LOCALIDADE"))
+    private LocalidadeUsuario localidade;
 
     public Long getId() {
         return id;
@@ -49,11 +49,11 @@ public class Grupo {
         this.nome = nome;
     }
 
-    public FaceTecUser getPredio() {
-        return predio;
+    public LocalidadeUsuario getLocalidade() {
+        return localidade;
     }
 
-    public void setPredio(FaceTecUser predio) {
-        this.predio = predio;
+    public void setLocalidade(LocalidadeUsuario localidade) {
+        this.localidade = localidade;
     }
 }

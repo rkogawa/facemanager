@@ -8,7 +8,7 @@ import { FeedbackService } from "../shared/feedback.service";
 import { Usuario } from "./usuario";
 
 @Component({
-    selector: 'facetec-usuario',
+    selector: 'app-facetec-usuario',
     templateUrl: './usuario.component.html',
     styleUrls: ['./usuario.component.scss']
 })
@@ -36,7 +36,8 @@ export class UsuarioComponent implements OnInit {
             'username': [usuario.username, Validators.required],
             'admin': usuario.admin,
             'changePassword': false,
-            'password': ''
+            'password': '',
+            'localidade': [usuario.localidade, Validators.required]
         })
     }
 
@@ -90,6 +91,7 @@ export class UsuarioComponent implements OnInit {
                     this.usernameAutocomplete.loadList();
                     this.createForm(new Usuario());
                     this.form.get('usernameOriginal').setValue('');
+                    this.form.get('localidade').setValue('');
                 }
             );
     }

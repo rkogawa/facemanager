@@ -23,28 +23,28 @@ public class GrupoService {
 
     public void create(GrupoVO vo) {
         Grupo grupo = new Grupo();
-        grupo.setPredio(securityService.getUser());
+        grupo.setLocalidade(securityService.getLocalidadeUsuario());
         saveGrupo(vo, grupo);
     }
 
     private void saveGrupo(GrupoVO vo, Grupo grupo) {
         grupo.setNome(vo.getNome());
-        if (dao.existsBy(grupo.getNome(), grupo.getPredio(), grupo.getId())) {
+        if (dao.existsBy(grupo.getNome(), grupo.getLocalidade(), grupo.getId())) {
             throw new RuntimeException("Já existe grupo cadastrado com nome " + grupo.getNome());
         }
         dao.save(grupo);
     }
 
     public void update(GrupoVO vo) {
-        Grupo grupo = dao.findBy(vo.getNomeOriginal(), securityService.getUser());
+        Grupo grupo = dao.findBy(vo.getNomeOriginal(), securityService.getLocalidadeUsuario());
         saveGrupo(vo, grupo);
     }
 
     public void delete(String nome) {
-        dao.delete(dao.findBy(nome, securityService.getUser()));
+        dao.delete(dao.findBy(nome, securityService.getLocalidadeUsuario()));
     }
 
     public List<String> list() {
-        return dao.findAll(securityService.getUser()).stream().map(g -> g.getNome()).collect(Collectors.toList());
+        return dao.findAll(securityService.getLocalidadeUsuario()).stream().map(g -> g.getNome()).collect(Collectors.toList());
     }
 }

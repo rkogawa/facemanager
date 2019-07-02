@@ -11,7 +11,6 @@
 // Alternatively, you can import and @include the theme mixins for each component that you are using.
 @include angular-material-theme($app-theme);
 
-
 body {
   margin: 0;
   min-height: 100% !important;
@@ -19,69 +18,6 @@ body {
   font-family: Roboto, Arial, sans-serif;
   font-size: 18px;
   color: #292a1d;
-}
-
-a {
-  text-decoration-color: mat-color($app-primary);
-  color: mat-color($app-primary);
-}
-
-/* Nav bar */
-
-.fixed-topnav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 8 !important;
-  width: 100% !important;
-}
-
-.fixed-botnav {
-  position: fixed !important;
-  bottom: 0;
-  left: 0;
-  z-index: 8 !important;
-  max-height: 3% !important;
-}
-
-.mat-toolbar-row,
-.mat-toolbar-single-row {
-  height: 50px !important;
-  padding: 0 8px !important;
-}
-
-.mat-drawer-container,
-.mat-drawer {
-  padding-top: 50px;
-  max-width: 97% !important;
-}
-
-/* Tabs */
-
-.page {
-  max-height: 97% !important;
-}
-
-.mat-tab-header {
-  max-height: 50px !important;
-}
-
-.reportParameter {
-  margin-bottom: 1%;
-
-  mat-action-row {
-    padding: 6px 8px 6px 8px;
-  }
-
-  .mat-raised-button {
-    line-height: 30px !important;
-    margin-left: 16px;
-  }
-
-  app-chips {
-    width: 90%;
-  }
-
 }
 
 .mat-expansion-panel-content {
@@ -95,83 +31,6 @@ a {
   font-size: 13px !important;
 }
 
-.mat-menu-panel {
-  min-width: 0px !important;
-}
-
-.mat-menu-item {
-  padding-left: 0px !important;
-  padding-right: 0px !important;
-}
-
-.inner-tab {
-  padding: 1% .5%;
-  position: relative;
-  overflow: auto;
-}
-
-/* Dialogos de cadastro */
-
-.dialog-cadastro {
-  display: flex;
-  flex-direction: column;
-}
-
-.dialog-cadastro mat-form-field,
-.dialog-cadastro app-autocomplete,
-.dialog-cadastro app-date-picker,
-.dialog-cadastro app-chips {
-  width: 100%;
-  margin-right: 0;
-}
-
-.dialog-cadastro mat-slide-toggle {
-  margin-top: 4px;
-  margin-bottom: 10px
-}
-
-
-/* Table */
-
-table {
-  width: 100%;
-}
-
-.filter {
-  font-size: 12px;
-  width: 100%;
-  margin-right: 0;
-}
-
-/* Auto complete */
-
-.portfolio-autocomplete {
-  min-width: 375px;
-}
-
-.qualificadorTransacao-autocomplete {
-  min-width: 400px;
-}
-
-.parametroTransacao-autocomplete {
-  min-width: 400px;
-  max-width: 400px;
-}
-
-.curva-autocomplete {
-  min-width: 375px;
-}
-
-.moeda-autocomplete {
-  min-width: 100px !important;
-  max-width: 100px !important;
-}
-
-.duration-autocomplete {
-  min-width: 125px !important;
-  max-width: 125px !important;
-}
-
 app-autocomplete.ng-dirty.ng-invalid {
   color: red;
 }
@@ -183,8 +42,6 @@ app-autocomplete.ng-dirty.ng-invalid .mat-form-field-underline {
 app-autocomplete.ng-dirty.ng-invalid .mat-form-field-label {
   color: red;
 }
-
-/* Date picker */
 
 app-date-picker {
   width: 120px;
@@ -201,8 +58,6 @@ app-date-picker.ng-dirty.ng-invalid .mat-form-field-underline .mat-form-field-la
 app-date-picker.ng-dirty.ng-invalid .mat-form-field-label {
   color: red;
 }
-
-/* Snack bar */
 
 .mat-snack-bar-container {
   border-radius: 10px !important;
@@ -228,51 +83,12 @@ app-date-picker.ng-dirty.ng-invalid .mat-form-field-label {
   }
 }
 
-/* Outros */
-
 mat-form-field {
   margin-right: 5%;
 }
 
 .mat-slide-toggle {
   margin-right: 60px
-}
-
-.mat-tooltip {
-  font-size: 14px;
-}
-
-.mat-step-icon-content {
-  font-size: 0px !important;
-}
-
-.mat-column-instrumentos {
-  width: 33% !important;
-}
-
-.width100 {
-  width: 100%;
-}
-
-.input-file {
-  display: none;
-}
-
-.button-expansion-panel {
-  margin-right: 16px !important;
-}
-
-.file-selected {
-  background-color: white !important;
-  color: black !important;
-}
-
-mat-tooltip-component>.mat-tooltip {
-  white-space: pre-line;
-}
-
-.mat-tab-label-active {
-  background-color: #b0bec5;
 }
 
 .btn-facetec {

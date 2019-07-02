@@ -15,6 +15,8 @@ public class FaceTecUserVO {
 
     private boolean changePassword;
 
+    private String localidade;
+
     public Long getId() {
         return id;
     }
@@ -53,5 +55,13 @@ public class FaceTecUserVO {
 
     public void setChangePassword(boolean changePassword) {
         this.changePassword = changePassword;
+    }
+
+    public String getLocalidade() {
+        return localidade;
+    }
+
+    public void setLocalidade(String localidade) {
+        this.localidade = localidade;
     }
 }

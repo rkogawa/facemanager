@@ -2,6 +2,7 @@ package facetec.core.security.service;
 
 import facetec.core.security.dao.FaceTecUserDAO;
 import facetec.core.security.domain.FaceTecUser;
+import facetec.core.security.domain.LocalidadeUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -25,13 +26,16 @@ public class SecurityService {
         return authentication != null ? authentication.getName() : "Sistema";
     }
 
-    public FaceTecUser getUser() {
-        String currentUser = this.getCurrentUser();
-        FaceTecUser user = userDAO.findBy(currentUser);
+    public LocalidadeUsuario getLocalidadeUsuario() {
+        return getLocalidadeUsuario(getCurrentUser());
+    }
+
+    public LocalidadeUsuario getLocalidadeUsuario(String usuario) {
+        FaceTecUser user = userDAO.findBy(usuario);
         if (user == null) {
-            throw new RuntimeException("Não foi encontrado usuário " + currentUser);
+            throw new RuntimeException("Não foi encontrado usuário " + usuario);
         }
-        return user;
+        return user.getLocalidade();
     }
 
     public boolean checkAdminPassword(String pass) {

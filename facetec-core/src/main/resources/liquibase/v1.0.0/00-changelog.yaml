@@ -8,6 +8,27 @@ databaseChangeLog:
         - column:
             constraints:
               primaryKey: true
+              primaryKeyName: PK_LOCALIDADE_USUARIO
+            name: COD_LOCALIDADE_USUARIO
+            type: java.sql.Types.BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: NOME
+            type: java.sql.Types.VARCHAR(255)
+        tableName: LOCALIDADE_USUARIO
+    - createSequence:
+        incrementBy: 1
+        sequenceName: SEQ_LOCALIDADE_USUARIO
+- changeSet:
+    id: 2
+    author: rkogawa
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              primaryKey: true
               primaryKeyName: PK_FCUSER
             name: COD_USER
             type: java.sql.Types.BIGINT
@@ -24,11 +45,14 @@ databaseChangeLog:
         - column:
             name: USERNAME
             type: java.sql.Types.VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+              foreignKeyName: FK_USER_LOCALIDADE
+              references: LOCALIDADE_USUARIO(COD_LOCALIDADE_USUARIO)
+            name: COD_LOCALIDADE_USUARIO
+            type: java.sql.Types.BIGINT
         tableName: FACETEC_USER
-- changeSet:
-    id: 2
-    author: rkogawa
-    changes:
     - createSequence:
         incrementBy: 1
         sequenceName: SEQ_FACETEC_USER
@@ -52,9 +76,9 @@ databaseChangeLog:
         - column:
             constraints:
               nullable: false
-              foreignKeyName: FK_GRUPO_USER
-              references: FACETEC_USER(COD_USER)
-            name: COD_USER
+              foreignKeyName: FK_GRUPO_LOCALIDADE
+              references: LOCALIDADE_USUARIO(COD_LOCALIDADE_USUARIO)
+            name: COD_LOCALIDADE_USUARIO
             type: java.sql.Types.BIGINT
         tableName: GRUPO
 - changeSet:
@@ -126,9 +150,9 @@ databaseChangeLog:
         - column:
             constraints:
               nullable: false
-              foreignKeyName: FK_PESSOA_USER
-              references: FACETEC_USER(COD_USER)
-            name: COD_USER
+              foreignKeyName: FK_PESSOA_LOCALIDADE
+              references: LOCALIDADE_USUARIO(COD_LOCALIDADE_USUARIO)
+            name: COD_LOCALIDADE_USUARIO
             type: java.sql.Types.BIGINT
         - column:
             constraints:
@@ -173,9 +197,9 @@ databaseChangeLog:
         - column:
             constraints:
               nullable: false
-              foreignKeyName: FK_DEVICE_USER
-              references: FACETEC_USER(COD_USER)
-            name: COD_USER
+              foreignKeyName: FK_DEVICE_LOCALIDADE
+              references: LOCALIDADE_USUARIO(COD_LOCALIDADE_USUARIO)
+            name: COD_LOCALIDADE_USUARIO
             type: java.sql.Types.BIGINT
         tableName: DEVICE
 - changeSet:
@@ -204,7 +228,7 @@ databaseChangeLog:
       - createIndex:
             columns:
             - column:
-                  name: COD_USER
+                  name: COD_LOCALIDADE_USUARIO
             indexName: IX_PESSOA_2
             tableName: PESSOA
       - createIndex:
@@ -213,6 +237,12 @@ databaseChangeLog:
                   name: USERNAME
             indexName: IX_USER_0
             tableName: FACETEC_USER
+      - createIndex:
+            columns:
+            - column:
+                  name: COD_LOCALIDADE_USUARIO
+            indexName: IX_USER_1
+            tableName: FACETEC_USER
 - changeSet:
       id: 10
       author: rkogawa
@@ -220,7 +250,7 @@ databaseChangeLog:
       - createIndex:
             columns:
             - column:
-                  name: COD_USER
+                  name: COD_LOCALIDADE_USUARIO
             indexName: IX_DEVICE_0
             tableName: DEVICE
 - changeSet:
@@ -230,7 +260,7 @@ databaseChangeLog:
       - createIndex:
             columns:
             - column:
-                  name: COD_USER
+                  name: COD_LOCALIDADE_USUARIO
             indexName: IX_GRUPO_0
             tableName: GRUPO
 - changeSet:

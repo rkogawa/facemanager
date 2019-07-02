@@ -1,7 +1,7 @@
 package facetec.core.domain;
 
 import facetec.core.domain.enumx.InformacaoAcessoPessoa;
-import facetec.core.security.domain.FaceTecUser;
+import facetec.core.security.domain.LocalidadeUsuario;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -66,8 +66,8 @@ public class Pessoa {
     private String comentario;
 
     @ManyToOne
-    @JoinColumn(name = "COD_USER", nullable = false, foreignKey = @ForeignKey(name = "FK_PESSOA_USER"))
-    private FaceTecUser predio;
+    @JoinColumn(name = "COD_LOCALIDADE_USUARIO", nullable = false, foreignKey = @ForeignKey(name = "FK_PESSOA_LOCALIDADE"))
+    private LocalidadeUsuario localidade;
 
     @Column(name = "FOTO")
     private String foto;
@@ -176,12 +176,12 @@ public class Pessoa {
         this.comentario = comentario;
     }
 
-    public FaceTecUser getPredio() {
-        return predio;
+    public LocalidadeUsuario getLocalidade() {
+        return localidade;
     }
 
-    public void setPredio(FaceTecUser predio) {
-        this.predio = predio;
+    public void setLocalidade(LocalidadeUsuario localidade) {
+        this.localidade = localidade;
     }
 
     public String getFoto() {

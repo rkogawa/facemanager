@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule, ErrorHandler, LOCALE_ID } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { FacetecService } from './services/facetec.service';
 import { AuthGuardService } from './services/auth-guard.service';
@@ -26,6 +26,8 @@ import { MenuAdminComponent } from './menu/menu-admin.component';
 import { UsuarioComponent } from './usuarios/usuario.component';
 import { AuthGuardAdminService } from './services/auth-guard-admin.service';
 import { FeedbackIntegracaoDialogComponent } from './cadastros/feedback-integracao-dialog.component';
+import { LocalidadeComponent } from './usuarios/localidade.component';
+import { UsuariosTabsComponent } from './usuarios/usuarios-tabs.component';
 
 @NgModule({
   imports: [
@@ -49,11 +51,13 @@ import { FeedbackIntegracaoDialogComponent } from './cadastros/feedback-integrac
     DeviceComponent,
     FeedbackIntegracaoDialogComponent,
     GrupoComponent,
+    LocalidadeComponent,
     LoginComponent,
     MenuAdminComponent,
     MenuComponent,
     SetupComponent,
-    UsuarioComponent
+    UsuarioComponent,
+    UsuariosTabsComponent
   ],
   entryComponents: [
     FeedbackIntegracaoDialogComponent

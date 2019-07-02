@@ -3,7 +3,7 @@ package facetec.core.dao;
 import facetec.core.domain.IntegracaoPessoa;
 import facetec.core.domain.Pessoa;
 import facetec.core.domain.enumx.StatusIntegracaoPessoa;
-import facetec.core.security.domain.FaceTecUser;
+import facetec.core.security.domain.LocalidadeUsuario;
 import org.hibernate.Session;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,16 +36,15 @@ public class IntegracaoPessoaDAO {
         getSession().save(integracaoPessoa);
     }
 
-    public List<IntegracaoPessoa> findPendentes(String usuario) {
+    public List<IntegracaoPessoa> findPendentes(LocalidadeUsuario localidade) {
         CriteriaBuilder criteriaBuilder = getSession().getCriteriaBuilder();
         CriteriaQuery<IntegracaoPessoa> query = criteriaBuilder.createQuery(IntegracaoPessoa.class);
         Root<IntegracaoPessoa> root = query.from(IntegracaoPessoa.class);
         Join<IntegracaoPessoa, Pessoa> joinPessoa = root.join("pessoa");
-        Join<Pessoa, FaceTecUser> joinUsuario = joinPessoa.join("predio");
         query.select(root);
         Expression<StatusIntegracaoPessoa> exp = root.get("status");
         Predicate pendentesCondition = exp.in(StatusIntegracaoPessoa.PENDENTE_INCLUSAO, StatusIntegracaoPessoa.PENDENTE_ALTERACAO, StatusIntegracaoPessoa.PENDENTE_EXCLUSAO);
-        query.where(criteriaBuilder.equal(joinUsuario.get("username"), usuario), pendentesCondition);
+        query.where(criteriaBuilder.equal(joinPessoa.get("localidade"), localidade), pendentesCondition);
         return getSession().createQuery(query).list();
     }
 

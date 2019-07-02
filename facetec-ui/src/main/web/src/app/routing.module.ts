@@ -4,8 +4,8 @@ import { LoginComponent } from './login/login.component';
 import { AuthGuardService } from './services/auth-guard.service';
 import { CadastrosComponent } from './cadastros/cadastros.component';
 import { SetupComponent } from './setup/setup.component';
-import { UsuarioComponent } from './usuarios/usuario.component';
 import { AuthGuardAdminService } from './services/auth-guard-admin.service';
+import { UsuariosTabsComponent } from './usuarios/usuarios-tabs.component';
 
 const routes: Routes = [
   {
@@ -21,7 +21,7 @@ const routes: Routes = [
     canActivate: [AuthGuardService]
   },
   {
-    path: 'usuarios', component: UsuarioComponent,
+    path: 'usuarios', component: UsuariosTabsComponent,
     canActivate: [AuthGuardAdminService]
   }
 ];

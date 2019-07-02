@@ -1,5 +1,6 @@
 package facetec.core.service;
 
+import facetec.core.dao.LocalidadeUsuarioDAO;
 import facetec.core.security.dao.FaceTecUserDAO;
 import facetec.core.security.domain.FaceTecUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ public class FaceTecUserService {
     @Autowired
     private FaceTecUserDAO dao;
 
+    @Autowired
+    private LocalidadeUsuarioDAO localidadeDAO;
+
     public void create(FaceTecUserVO vo) {
         FaceTecUser usuario = new FaceTecUser();
         usuario.setPassword(encodePassword(vo));
@@ -31,6 +35,7 @@ public class FaceTecUserService {
     private void saveUsuario(FaceTecUserVO vo, FaceTecUser usuario) {
         usuario.setUsername(vo.getUsername());
         usuario.setAdmin(vo.isAdmin());
+        usuario.setLocalidade(localidadeDAO.findBy(vo.getLocalidade()));
         if (dao.existsBy(vo.getUsername(), vo.getId())) {
             throw new RuntimeException("Já existe usuário " + vo.getUsername() + " cadastrado.");
         }
@@ -59,6 +64,7 @@ public class FaceTecUserService {
         vo.setId(usuario.getId());
         vo.setUsername(usuario.getUsername());
         vo.setAdmin(usuario.isAdmin());
+        vo.setLocalidade(usuario.getLocalidade().getNome());
         return vo;
     }
 }

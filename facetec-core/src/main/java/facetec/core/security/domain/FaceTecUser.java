@@ -2,9 +2,13 @@ package facetec.core.security.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -29,6 +33,10 @@ public class FaceTecUser {
 
     @Column(name = "ADMIN", nullable = false)
     private boolean admin;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "COD_LOCALIDADE_USUARIO", nullable = false, foreignKey = @ForeignKey(name = "FK_USER_LOCALIDADE"))
+    private LocalidadeUsuario localidade;
 
     public Long getId() {
         return id;
@@ -60,5 +68,13 @@ public class FaceTecUser {
 
     public void setAdmin(boolean admin) {
         this.admin = admin;
+    }
+
+    public LocalidadeUsuario getLocalidade() {
+        return localidade;
+    }
+
+    public void setLocalidade(LocalidadeUsuario localidade) {
+        this.localidade = localidade;
     }
 }

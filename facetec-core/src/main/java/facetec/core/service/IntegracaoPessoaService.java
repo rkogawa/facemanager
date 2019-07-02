@@ -9,6 +9,7 @@ import facetec.core.domain.Device;
 import facetec.core.domain.IntegracaoPessoa;
 import facetec.core.domain.Pessoa;
 import facetec.core.domain.enumx.StatusIntegracaoPessoa;
+import facetec.core.security.service.SecurityService;
 import facetec.core.service.integracao.FaceCreateVO;
 import facetec.core.service.integracao.PermissionCreateVO;
 import facetec.core.service.integracao.PermissionDeleteVO;
@@ -39,6 +40,9 @@ public class IntegracaoPessoaService {
     @Autowired
     private PessoaDAO pessoaDAO;
 
+    @Autowired
+    private SecurityService securityService;
+
     private static final String DEVICE_PASSWORD = "12345";
 
     @Value("${facetec.client.deviceBaseUrl:http://%s:8088/}")
@@ -53,7 +57,7 @@ public class IntegracaoPessoaService {
     }
 
     public List<IntegracaoPessoaVO> findPendentes(String usuario) {
-        List<IntegracaoPessoaVO> integracoes = dao.findPendentes(usuario).stream().map(i -> {
+        List<IntegracaoPessoaVO> integracoes = dao.findPendentes(securityService.getLocalidadeUsuario(usuario)).stream().map(i -> {
             IntegracaoPessoaVO integracaoVO = new IntegracaoPessoaVO();
             integracaoVO.setId(i.getId().toString());
             Pessoa pessoa = i.getPessoa();
@@ -79,7 +83,7 @@ public class IntegracaoPessoaService {
     }
 
     private List<String> getBaseUrlDevices(String usuario) {
-        return deviceDAO.findBy(usuario).stream().map(d -> getUrl(d)).collect(Collectors.toList());
+        return deviceDAO.findBy(securityService.getLocalidadeUsuario(usuario)).stream().map(d -> getUrl(d)).collect(Collectors.toList());
     }
 
     private String getUrl(Device d) {
@@ -192,7 +196,7 @@ public class IntegracaoPessoaService {
 
     public IntegracaoDevicesVO findDevices(String usuario) {
         IntegracaoDevicesVO vo = new IntegracaoDevicesVO();
-        vo.setDevices(deviceDAO.findBy(usuario).stream().map(d -> {
+        vo.setDevices(deviceDAO.findBy(securityService.getLocalidadeUsuario(usuario)).stream().map(d -> {
             IntegracaoDeviceVO device = new IntegracaoDeviceVO();
             device.setIp(d.getIp());
             device.setNome(d.getNome());

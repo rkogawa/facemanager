@@ -3,7 +3,7 @@ package facetec.core.service;
 import facetec.core.dao.DeviceDAO;
 import facetec.core.domain.Device;
 import facetec.core.domain.enumx.ClassificacaoDevice;
-import facetec.core.security.domain.FaceTecUser;
+import facetec.core.security.domain.LocalidadeUsuario;
 import facetec.core.security.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,15 +28,15 @@ public class DeviceService {
             throw new RuntimeException("Senha do admin inválida.");
         }
 
-        FaceTecUser currentUser = securityService.getUser();
+        LocalidadeUsuario localidade = securityService.getLocalidadeUsuario();
 
-        dao.findBy(currentUser).forEach(d -> dao.delete(d));
+        dao.findBy(localidade).forEach(d -> dao.delete(d));
 
         devices.getDevices().forEach(d -> {
             Device device = new Device();
             device.setIp(d.getIp());
             device.setNome(d.getNome());
-            device.setPredio(currentUser);
+            device.setLocalidade(localidade);
             device.setClassificacao(ClassificacaoDevice.getByDescricao(d.getClassificacao()));
             dao.save(device);
         });
@@ -47,7 +47,7 @@ public class DeviceService {
     }
 
     public List<DeviceVO> findDevices(String usuario) {
-        return dao.findBy(usuario).stream().map(d -> {
+        return dao.findBy(securityService.getLocalidadeUsuario(usuario)).stream().map(d -> {
             DeviceVO deviceVO = new DeviceVO();
             deviceVO.setIp(d.getIp());
             deviceVO.setNome(d.getNome());
