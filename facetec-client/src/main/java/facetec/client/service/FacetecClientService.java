@@ -13,7 +13,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -24,9 +23,6 @@ import java.util.Map;
 @Service
 public class FacetecClientService {
 
-    @Value("${facetec.server.url:https://www.facetec.tk/}")
-    private String facetecServerUrl;
-
     @Autowired
     private ClientLoginController controller;
 
@@ -34,7 +30,7 @@ public class FacetecClientService {
         CloseableHttpClient client = HttpClients.createDefault();
 
         try {
-            HttpPost httpPost = new HttpPost(facetecServerUrl + "welcome");
+            HttpPost httpPost = new HttpPost(controller.getUrl() + "welcome");
             StringEntity entity = new StringEntity("{ \"username\": \"" + usuario + "\", \"password\": \"" + senha + "\" }");
             httpPost.setEntity(entity);
             httpPost.setHeader("Accept", "application/json");
@@ -76,7 +72,7 @@ public class FacetecClientService {
     public String updateIntegracao(String id, Boolean success, String logIntegracao) {
         CloseableHttpClient client = HttpClients.createDefault();
         try {
-            HttpPut put = new HttpPut(facetecServerUrl + "integracaoPessoa/" + id);
+            HttpPut put = new HttpPut(controller.getUrl() + "integracaoPessoa/" + id);
             StringEntity entity = new StringEntity("{ \"success\":" + success + " }");
             put.setEntity(entity);
             put.setHeader("Accept", "application/json");
@@ -97,7 +93,7 @@ public class FacetecClientService {
     private String get(String path) {
         CloseableHttpClient client = HttpClients.createDefault();
         try {
-            HttpGet httpGet = new HttpGet(facetecServerUrl + path + "/");
+            HttpGet httpGet = new HttpGet(controller.getUrl() + path + "/");
             CloseableHttpResponse response = client.execute(httpGet);
             return EntityUtils.toString(response.getEntity());
         } catch (Exception e) {

@@ -31,7 +31,7 @@ public class ClientLoginController {
     @Autowired
     private FacetecClientService service;
 
-    @Value("${facetec.client.url:https://www.facetec.tk/}")
+    @Value("${facetec.client.url:https://www.facetec.tk/ftca888/}")
     private String url;
 
     @Autowired
@@ -54,6 +54,10 @@ public class ClientLoginController {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public String getUrl() {
+        return url;
     }
 
     public String getCurrentUser() {

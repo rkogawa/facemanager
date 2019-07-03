@@ -1,5 +1,6 @@
 package facetec.core.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,9 @@ public class CustomErrorController implements ErrorController {
     @Resource
     private ErrorAttributes errorAttributes;
 
+    @Value("${server.servlet.context-path:}")
+    private String contextPath;
+
     @RequestMapping(value = PATH)
     public ResponseEntity error(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ServletWebRequest requestAttributes = new ServletWebRequest(request);
@@ -34,6 +38,7 @@ public class CustomErrorController implements ErrorController {
             String targetPath = (String) errorAttributes.get("path");
             // Ignora recursos não encontrados, por ex .css e .js
             if (!targetPath.contains(".")) {
+                targetPath = targetPath.replace(contextPath, "");
                 String urlPath = "?errorType=404&targetPath=" + targetPath;
                 if(request.getParameterMap().containsKey("token")) {
                     urlPath += "&token=" + request.getParameter("token");

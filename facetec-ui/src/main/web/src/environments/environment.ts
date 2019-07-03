@@ -4,7 +4,7 @@
 export const environment = {
   production: true,
   // baseUrl: window.location.protocol + '//' + window.location.host + '/facetec/',
-  baseUrl: window.location.protocol + '//' + 'localhost:8090',
+  baseUrl: window.location.protocol + '//' + 'localhost:8090/ftca888',
 };
 
 /*
