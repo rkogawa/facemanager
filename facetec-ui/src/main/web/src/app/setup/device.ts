@@ -2,6 +2,7 @@ export class Device {
     ip: string;
     nome: string;
     classificacao: string;
+    modelo: string;
 }
 
 export class FeedbackPersonDevice {

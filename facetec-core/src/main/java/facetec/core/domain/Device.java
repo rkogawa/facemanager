@@ -1,6 +1,7 @@
 package facetec.core.domain;
 
 import facetec.core.domain.enumx.ClassificacaoDevice;
+import facetec.core.domain.enumx.ModeloDevice;
 import facetec.core.security.domain.LocalidadeUsuario;
 
 import javax.persistence.Column;
@@ -36,6 +37,9 @@ public class Device {
     @Column(name = "CLASSIFICACAO", nullable = false)
     private ClassificacaoDevice classificacao;
 
+    @Column(name = "MODELO", nullable = false)
+    private ModeloDevice modelo;
+
     @ManyToOne
     @JoinColumn(name = "COD_LOCALIDADE_USUARIO", nullable = false, foreignKey = @ForeignKey(name = "FK_DEVICE_LOCALIDADE"))
     private LocalidadeUsuario localidade;
@@ -70,6 +74,14 @@ public class Device {
 
     public void setClassificacao(ClassificacaoDevice classificacao) {
         this.classificacao = classificacao;
+    }
+
+    public ModeloDevice getModelo() {
+        return modelo;
+    }
+
+    public void setModelo(ModeloDevice modelo) {
+        this.modelo = modelo;
     }
 
     public LocalidadeUsuario getLocalidade() {

@@ -22,7 +22,7 @@ export class DeviceComponent implements OnInit {
 
     @ViewChild('btnSalvar') btnSalvar: AsyncButtonDirective;
 
-    displayedColumns = ['ip', 'nome', 'classificacao', 'remove'];
+    displayedColumns = ['ip', 'nome', 'classificacao', 'modelo', 'remove'];
     constructor(
         private fb: FormBuilder,
         private feedbackService: FeedbackService,
@@ -56,7 +56,8 @@ export class DeviceComponent implements OnInit {
         return this.fb.group({
             ip: device.ip,
             nome: device.nome,
-            classificacao: device.classificacao
+            classificacao: [device.classificacao, Validators.required],
+            modelo: [device.modelo, Validators.required]
         })
     }
 

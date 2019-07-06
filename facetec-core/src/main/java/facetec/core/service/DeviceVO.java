@@ -11,6 +11,8 @@ public class DeviceVO {
 
     private String classificacao;
 
+    private String modelo;
+
     public String getIp() {
         return ip;
     }
@@ -33,5 +35,13 @@ public class DeviceVO {
 
     public void setClassificacao(String classificacao) {
         this.classificacao = classificacao;
+    }
+
+    public String getModelo() {
+        return modelo;
+    }
+
+    public void setModelo(String modelo) {
+        this.modelo = modelo;
     }
 }

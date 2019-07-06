@@ -197,6 +197,11 @@ databaseChangeLog:
         - column:
             constraints:
               nullable: false
+            name: MODELO
+            type: java.sql.Types.INTEGER
+        - column:
+            constraints:
+              nullable: false
               foreignKeyName: FK_DEVICE_LOCALIDADE
               references: LOCALIDADE_USUARIO(COD_LOCALIDADE_USUARIO)
             name: COD_LOCALIDADE_USUARIO

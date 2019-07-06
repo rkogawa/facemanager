@@ -3,6 +3,7 @@ package facetec.core.service;
 import facetec.core.dao.DeviceDAO;
 import facetec.core.domain.Device;
 import facetec.core.domain.enumx.ClassificacaoDevice;
+import facetec.core.domain.enumx.ModeloDevice;
 import facetec.core.security.domain.LocalidadeUsuario;
 import facetec.core.security.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ public class DeviceService {
             device.setNome(d.getNome());
             device.setLocalidade(localidade);
             device.setClassificacao(ClassificacaoDevice.getByDescricao(d.getClassificacao()));
+            device.setModelo(ModeloDevice.valueOf(d.getModelo()));
             dao.save(device);
         });
     }
@@ -52,6 +54,7 @@ public class DeviceService {
             deviceVO.setIp(d.getIp());
             deviceVO.setNome(d.getNome());
             deviceVO.setClassificacao(d.getClassificacao().getDescricao());
+            deviceVO.setModelo(d.getModelo().name());
             return deviceVO;
         }).collect(Collectors.toList());
     }
