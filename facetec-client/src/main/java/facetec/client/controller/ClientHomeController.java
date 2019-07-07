@@ -55,7 +55,7 @@ public class ClientHomeController {
 
                 final StringBuilder status = new StringBuilder();
                 try {
-                    deviceService.post(device.getUrl(), requestPath, null);
+                    deviceService.post(device.getUrl(), "application/json", requestPath, null);
                     status.append("OK");
                 } catch (Exception e) {
                     status.append("Erro: " + e.getMessage());

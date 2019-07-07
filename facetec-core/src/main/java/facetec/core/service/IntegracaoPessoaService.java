@@ -5,12 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import facetec.core.dao.DeviceDAO;
 import facetec.core.dao.IntegracaoPessoaDAO;
 import facetec.core.dao.PessoaDAO;
-import facetec.core.domain.Device;
 import facetec.core.domain.IntegracaoPessoa;
 import facetec.core.domain.Pessoa;
+import facetec.core.domain.enumx.ModeloDevice;
 import facetec.core.domain.enumx.StatusIntegracaoPessoa;
 import facetec.core.security.service.SecurityService;
 import facetec.core.service.integracao.FaceCreateVO;
+import facetec.core.service.integracao.IntegracaoDeviceStrategy;
 import facetec.core.service.integracao.PermissionCreateVO;
 import facetec.core.service.integracao.PermissionDeleteVO;
 import facetec.core.service.integracao.PersonCreateVO;
@@ -18,11 +19,12 @@ import facetec.core.service.integracao.PersonDeleteVO;
 import facetec.core.service.integracao.PersonVO;
 import facetec.core.service.integracao.StatusIntegracaoPessoaVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -43,10 +45,16 @@ public class IntegracaoPessoaService {
     @Autowired
     private SecurityService securityService;
 
-    private static final String DEVICE_PASSWORD = "12345";
+    public static final String PARAM_FIELD_PASSWORD = "<DEVICE_PASSWORD>";
 
-    @Value("${facetec.client.deviceBaseUrl:http://%s:8088/}")
-    private String deviceBaseUrl;
+    private Map<ModeloDevice, IntegracaoDeviceStrategy> integracaoPorModelo = new HashMap<>();
+
+    @Autowired
+    public void setIntegracaoPorModelo(List<IntegracaoDeviceStrategy> integracoes) {
+        for (IntegracaoDeviceStrategy integracaoStrategy : integracoes) {
+            integracaoPorModelo.put(integracaoStrategy.getModelo(), integracaoStrategy);
+        }
+    }
 
     public IntegracaoPessoa criarIntegracaoPessoa(Pessoa pessoa, StatusIntegracaoPessoa status) {
         IntegracaoPessoa integracaoPessoa = new IntegracaoPessoa();
@@ -76,18 +84,23 @@ public class IntegracaoPessoaService {
         }).collect(Collectors.toList());
 
         if (!integracoes.isEmpty()) {
-            List<String> devicesUrl = getBaseUrlDevices(usuario);
-            integracoes.forEach(i -> i.setDevices(devicesUrl));
+            integracoes.forEach(i -> i.setDevices(getBaseUrlDevices(usuario)));
         }
         return integracoes;
     }
 
-    private List<String> getBaseUrlDevices(String usuario) {
-        return deviceDAO.findBy(securityService.getLocalidadeUsuario(usuario)).stream().map(d -> getUrl(d)).collect(Collectors.toList());
+    private List<IntegracaoPessoaDeviceVO> getBaseUrlDevices(String usuario) {
+        return deviceDAO.findBy(securityService.getLocalidadeUsuario(usuario)).stream().map(d -> {
+            IntegracaoPessoaDeviceVO vo = new IntegracaoPessoaDeviceVO();
+            vo.setUrl(getStrategy(d.getModelo()).getBaseUrl(d));
+            vo.setContentType(d.getModelo().getContentType());
+            vo.setPassword(getStrategy(d.getModelo()).getPassword());
+            return vo;
+        }).collect(Collectors.toList());
     }
 
-    private String getUrl(Device d) {
-        return String.format(deviceBaseUrl, d.getIp());
+    private IntegracaoDeviceStrategy getStrategy(ModeloDevice modelo) {
+        return integracaoPorModelo.get(modelo);
     }
 
     private StatusIntegracaoPessoa createRequestInclusao(IntegracaoPessoaVO integracaoVO, Pessoa pessoa) {
@@ -117,7 +130,7 @@ public class IntegracaoPessoaService {
     private IntegracaoPessoaRequestVO personCreate(Pessoa pessoa) {
         IntegracaoPessoaRequestVO request = new IntegracaoPessoaRequestVO("person/create");
 
-        PersonCreateVO paramPersonCreate = new PersonCreateVO(DEVICE_PASSWORD, new PersonVO(pessoa));
+        PersonCreateVO paramPersonCreate = new PersonCreateVO(new PersonVO(pessoa));
         createParamsJSON(request, paramPersonCreate);
         return request;
     }
@@ -125,31 +138,30 @@ public class IntegracaoPessoaService {
     private IntegracaoPessoaRequestVO faceCreate(Pessoa pessoa) {
         IntegracaoPessoaRequestVO request = new IntegracaoPessoaRequestVO("face/create");
 
-        FaceCreateVO paramPersonCreate = new FaceCreateVO(DEVICE_PASSWORD, pessoa.getCpf(), pessoa.getFoto());
+        FaceCreateVO paramPersonCreate = new FaceCreateVO(pessoa.getCpf(), pessoa.getFoto());
         createParamsJSON(request, paramPersonCreate);
         return request;
     }
 
     private IntegracaoPessoaRequestVO permissionsDelete(Pessoa pessoa) {
         IntegracaoPessoaRequestVO request = new IntegracaoPessoaRequestVO("person/permissionsDelete");
-        createParamsJSON(request, new PermissionDeleteVO(DEVICE_PASSWORD, pessoa.getCpf()));
+        createParamsJSON(request, new PermissionDeleteVO(pessoa.getCpf()));
         return request;
     }
 
     private IntegracaoPessoaRequestVO permissionsCreate(Pessoa pessoa) {
         IntegracaoPessoaRequestVO request = new IntegracaoPessoaRequestVO("person/permissionsCreate");
-        createParamsJSON(request, new PermissionCreateVO(DEVICE_PASSWORD, pessoa.getCpf(), Timestamp.valueOf(pessoa.getDataHoraFim()).getTime()));
+        createParamsJSON(request, new PermissionCreateVO(pessoa.getCpf(), Timestamp.valueOf(pessoa.getDataHoraFim()).getTime()));
         return request;
     }
 
     private IntegracaoPessoaRequestVO personDelete(Pessoa pessoa) {
         IntegracaoPessoaRequestVO request = new IntegracaoPessoaRequestVO("person/delete");
 
-        PersonDeleteVO paramPersonDelete = new PersonDeleteVO(DEVICE_PASSWORD, pessoa.getCpf());
+        PersonDeleteVO paramPersonDelete = new PersonDeleteVO(pessoa.getCpf());
         createParamsJSON(request, paramPersonDelete);
         return request;
     }
-
 
     private void createParamsJSON(IntegracaoPessoaRequestVO request, Object paramsVO) {
         try {
@@ -200,7 +212,7 @@ public class IntegracaoPessoaService {
             IntegracaoDeviceVO device = new IntegracaoDeviceVO();
             device.setIp(d.getIp());
             device.setNome(d.getNome());
-            device.setUrl(getUrl(d));
+            device.setUrl(getStrategy(d.getModelo()).getBaseUrl(d));
             return device;
         }).collect(Collectors.toList()));
 

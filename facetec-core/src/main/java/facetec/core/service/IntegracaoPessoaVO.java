@@ -10,7 +10,7 @@ public class IntegracaoPessoaVO {
 
     private String id;
 
-    private List<String> devices = new ArrayList<>();
+    private List<IntegracaoPessoaDeviceVO> devices = new ArrayList<>();
 
     private List<IntegracaoPessoaRequestVO> requests = new ArrayList<>();
 
@@ -22,11 +22,11 @@ public class IntegracaoPessoaVO {
         this.id = id;
     }
 
-    public List<String> getDevices() {
+    public List<IntegracaoPessoaDeviceVO> getDevices() {
         return devices;
     }
 
-    public void setDevices(List<String> devices) {
+    public void setDevices(List<IntegracaoPessoaDeviceVO> devices) {
         this.devices = devices;
     }
 

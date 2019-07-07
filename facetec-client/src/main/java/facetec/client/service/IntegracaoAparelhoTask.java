@@ -1,5 +1,6 @@
 package facetec.client.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +31,18 @@ public class IntegracaoAparelhoTask {
             final ResponseTask response = new ResponseTask();
             response.setId((String) i.get("id"));
             response.setSuccess(true);
-            ((List<String>) i.get("devices")).forEach(d -> {
+            ((List<Map>) i.get("devices")).forEach(d -> {
 
                 for (Map request : (List<Map>) i.get("requests")) {
                     String requestPath = (String) request.get("requestPath");
                     String paramsJSON = (String) request.get("paramsJSON");
                     try {
-                        service.post(d, requestPath, paramsJSON);
+                        paramsJSON = paramsJSON.replace("<DEVICE_PASSWORD>", (String) d.get("password"));
+                        String responseMsg = service.post((String) d.get("url"), (String) d.get("contentType"), requestPath, paramsJSON);
+                        if (responseMsg.contains("\"success\":false") && responseMsg.contains("\"msg\":")) {
+                            String errorMessage = (String) new ObjectMapper().readValue(responseMsg, Map.class).get("msg");
+                            throw new RuntimeException(String.format("Resultado inesperado: %s", errorMessage));
+                        }
                         logIntegracao.append(String.format("Requisição %s executada com sucesso em %s.\n", requestPath, d));
                     } catch (Exception e) {
                         logIntegracao.append(String.format("Erro na requisição %s em %s - %s.\n", requestPath, d, e.getMessage()));
