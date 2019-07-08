@@ -1,19 +1,18 @@
 package facetec.core.service.integracao;
 
-import facetec.core.service.IntegracaoPessoaService;
-
 /**
  * Created by rkogawa on 21/05/19.
  */
 public class PermissionCreateVO {
 
-    private final String pass = IntegracaoPessoaService.PARAM_FIELD_PASSWORD;
+    private final String pass;
 
     private final String personId;
 
-    private final Long time;
+    private final String time;
 
-    public PermissionCreateVO(String personId, Long time) {
+    public PermissionCreateVO(String pass, String personId, String time) {
+        this.pass = pass;
         this.personId = personId;
         this.time = time;
     }
@@ -26,7 +25,7 @@ public class PermissionCreateVO {
         return personId;
     }
 
-    public Long getTime() {
+    public String getTime() {
         return time;
     }
 }

@@ -13,6 +13,8 @@ public class PessoaResponseVO {
 
     private String foto;
 
+    private boolean integracaoAgendada;
+
     public Long getId() {
         return id;
     }
@@ -43,5 +45,13 @@ public class PessoaResponseVO {
 
     public void setFoto(String foto) {
         this.foto = foto;
+    }
+
+    public boolean isIntegracaoAgendada() {
+        return integracaoAgendada;
+    }
+
+    public void setIntegracaoAgendada(boolean integracaoAgendada) {
+        this.integracaoAgendada = integracaoAgendada;
     }
 }

@@ -63,7 +63,7 @@ public class ClientDeviceService {
                 nvps.add(new BasicNameValuePair(key, paramValue));
             }
 
-            httpPost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.ISO_8859_1));
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
         } else {
             StringEntity entity = new StringEntity(jsonParams);
             httpPost.setEntity(entity);

@@ -37,9 +37,8 @@ public class IntegracaoAparelhoTask {
                     String requestPath = (String) request.get("requestPath");
                     String paramsJSON = (String) request.get("paramsJSON");
                     try {
-                        paramsJSON = paramsJSON.replace("<DEVICE_PASSWORD>", (String) d.get("password"));
                         String responseMsg = service.post((String) d.get("url"), (String) d.get("contentType"), requestPath, paramsJSON);
-                        if (responseMsg.contains("\"success\":false") && responseMsg.contains("\"msg\":")) {
+                        if (paramsJSON.contains("\"shouldFail\":true") && responseMsg.contains("\"success\":false") && responseMsg.contains("\"msg\":")) {
                             String errorMessage = (String) new ObjectMapper().readValue(responseMsg, Map.class).get("msg");
                             throw new RuntimeException(String.format("Resultado inesperado: %s", errorMessage));
                         }

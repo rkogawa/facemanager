@@ -5,11 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import facetec.core.dao.DeviceDAO;
 import facetec.core.dao.IntegracaoPessoaDAO;
 import facetec.core.dao.PessoaDAO;
+import facetec.core.domain.Device;
 import facetec.core.domain.IntegracaoPessoa;
 import facetec.core.domain.Pessoa;
+import facetec.core.domain.enumx.ClassificacaoDevice;
 import facetec.core.domain.enumx.ModeloDevice;
 import facetec.core.domain.enumx.StatusIntegracaoPessoa;
+import facetec.core.security.domain.LocalidadeUsuario;
 import facetec.core.security.service.SecurityService;
+import facetec.core.service.integracao.DeviceKeyVO;
 import facetec.core.service.integracao.FaceCreateVO;
 import facetec.core.service.integracao.IntegracaoDeviceStrategy;
 import facetec.core.service.integracao.PermissionCreateVO;
@@ -21,7 +25,7 @@ import facetec.core.service.integracao.StatusIntegracaoPessoaVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +49,6 @@ public class IntegracaoPessoaService {
     @Autowired
     private SecurityService securityService;
 
-    public static final String PARAM_FIELD_PASSWORD = "<DEVICE_PASSWORD>";
-
     private Map<ModeloDevice, IntegracaoDeviceStrategy> integracaoPorModelo = new HashMap<>();
 
     @Autowired
@@ -65,100 +67,120 @@ public class IntegracaoPessoaService {
     }
 
     public List<IntegracaoPessoaVO> findPendentes(String usuario) {
-        List<IntegracaoPessoaVO> integracoes = dao.findPendentes(securityService.getLocalidadeUsuario(usuario)).stream().map(i -> {
-            IntegracaoPessoaVO integracaoVO = new IntegracaoPessoaVO();
-            integracaoVO.setId(i.getId().toString());
-            Pessoa pessoa = i.getPessoa();
-            StatusIntegracaoPessoa statusEnviado;
-            if (i.getStatus().isPendenteInclusao()) {
-                statusEnviado = createRequestInclusao(integracaoVO, pessoa);
-            } else if (i.getStatus().isPendenteExclusao()) {
-                statusEnviado = createRequestExclusao(integracaoVO, pessoa);
-            } else {
-                statusEnviado = createRequestAlteracao(integracaoVO, pessoa);
-            }
+        LocalidadeUsuario localidade = securityService.getLocalidadeUsuario(usuario);
+        List<IntegracaoPessoa> pessoasPendentes = dao.findPermanentesPendentes(localidade);
+        pessoasPendentes.addAll(dao.findVisitantesPendentes(localidade));
+        List<IntegracaoPessoaVO> integracoes = new ArrayList<>();
 
-            i.setStatus(statusEnviado);
-            dao.save(i);
-            return integracaoVO;
-        }).collect(Collectors.toList());
+        Map<DeviceKeyVO, List<IntegracaoPessoaDeviceVO>> devicesPorChave = getBaseUrlDevices(usuario);
+        for (IntegracaoPessoa pessoaPendente : pessoasPendentes) {
 
-        if (!integracoes.isEmpty()) {
-            integracoes.forEach(i -> i.setDevices(getBaseUrlDevices(usuario)));
+            devicesPorChave.keySet().forEach(deviceKey -> {
+                IntegracaoPessoaVO integracaoVO = new IntegracaoPessoaVO();
+                integracaoVO.setDevices(devicesPorChave.get(deviceKey));
+
+                integracaoVO.setId(pessoaPendente.getId().toString());
+                Pessoa pessoa = pessoaPendente.getPessoa();
+                StatusIntegracaoPessoa statusEnviado;
+                if (pessoaPendente.getStatus().isPendenteInclusao()) {
+                    statusEnviado = createRequestInclusao(integracaoVO, pessoa, deviceKey);
+                } else if (pessoaPendente.getStatus().isPendenteExclusao()) {
+                    statusEnviado = createRequestExclusao(integracaoVO, pessoa, deviceKey);
+                } else {
+                    statusEnviado = createRequestAlteracao(integracaoVO, pessoa, deviceKey);
+                }
+
+                pessoaPendente.setStatus(statusEnviado);
+                dao.save(pessoaPendente);
+                integracoes.add(integracaoVO);
+            });
+
         }
+
         return integracoes;
     }
 
-    private List<IntegracaoPessoaDeviceVO> getBaseUrlDevices(String usuario) {
-        return deviceDAO.findBy(securityService.getLocalidadeUsuario(usuario)).stream().map(d -> {
+    private Map<DeviceKeyVO, List<IntegracaoPessoaDeviceVO>> getBaseUrlDevices(String usuario) {
+        List<Device> devices = deviceDAO.findBy(securityService.getLocalidadeUsuario(usuario));
+        Map<DeviceKeyVO, List<IntegracaoPessoaDeviceVO>> devicesPorModelo = new HashMap<>();
+        devices.forEach(d -> {
+            DeviceKeyVO deviceKey = new DeviceKeyVO(d);
+            devicesPorModelo.putIfAbsent(deviceKey, new ArrayList<>());
             IntegracaoPessoaDeviceVO vo = new IntegracaoPessoaDeviceVO();
             vo.setUrl(getStrategy(d.getModelo()).getBaseUrl(d));
             vo.setContentType(d.getModelo().getContentType());
             vo.setPassword(getStrategy(d.getModelo()).getPassword());
-            return vo;
-        }).collect(Collectors.toList());
+            devicesPorModelo.get(deviceKey).add(vo);
+        });
+        return devicesPorModelo;
     }
 
     private IntegracaoDeviceStrategy getStrategy(ModeloDevice modelo) {
         return integracaoPorModelo.get(modelo);
     }
 
-    private StatusIntegracaoPessoa createRequestInclusao(IntegracaoPessoaVO integracaoVO, Pessoa pessoa) {
-        integracaoVO.getRequests().add(personCreate(pessoa));
-        integracaoVO.getRequests().add(faceCreate(pessoa));
+    private StatusIntegracaoPessoa createRequestInclusao(IntegracaoPessoaVO integracaoVO, Pessoa pessoa, DeviceKeyVO device) {
+        integracaoVO.getRequests().add(personCreate(pessoa, device));
+        integracaoVO.getRequests().add(faceCreate(pessoa, device));
         if (pessoa.getDataHoraFim() != null) {
-            integracaoVO.getRequests().add(permissionsCreate(pessoa));
+            integracaoVO.getRequests().add(permissionsCreate(pessoa, device));
         }
         return StatusIntegracaoPessoa.ENVIADO_INCLUSAO;
     }
 
-    private StatusIntegracaoPessoa createRequestAlteracao(IntegracaoPessoaVO integracaoVO, Pessoa pessoa) {
-        integracaoVO.getRequests().add(personCreate(pessoa));
-        integracaoVO.getRequests().add(faceCreate(pessoa));
-        integracaoVO.getRequests().add(permissionsDelete(pessoa));
-        if (pessoa.getDataHoraFim() != null) {
-            integracaoVO.getRequests().add(permissionsCreate(pessoa));
+    private StatusIntegracaoPessoa createRequestAlteracao(IntegracaoPessoaVO integracaoVO, Pessoa pessoa, DeviceKeyVO device) {
+        integracaoVO.getRequests().add(personDelete(pessoa, device));
+        integracaoVO.getRequests().add(personCreate(pessoa, device));
+        integracaoVO.getRequests().add(faceCreate(pessoa, device));
+        integracaoVO.getRequests().add(permissionsDelete(pessoa, device));
+        if (ClassificacaoDevice.ENTRADA.equals(device.getClassificacao()) && pessoa.getDataHoraFim() != null) {
+            integracaoVO.getRequests().add(permissionsCreate(pessoa, device));
         }
         return StatusIntegracaoPessoa.ENVIADO_ALTERACAO;
     }
 
-    private StatusIntegracaoPessoa createRequestExclusao(IntegracaoPessoaVO integracaoVO, Pessoa pessoa) {
-        integracaoVO.getRequests().add(personDelete(pessoa));
+    private StatusIntegracaoPessoa createRequestExclusao(IntegracaoPessoaVO integracaoVO, Pessoa pessoa, DeviceKeyVO device) {
+        integracaoVO.getRequests().add(personDelete(pessoa, device));
         return StatusIntegracaoPessoa.ENVIADO_EXCLUSAO;
     }
 
-    private IntegracaoPessoaRequestVO personCreate(Pessoa pessoa) {
+    private IntegracaoPessoaRequestVO personCreate(Pessoa pessoa, DeviceKeyVO device) {
         IntegracaoPessoaRequestVO request = new IntegracaoPessoaRequestVO("person/create");
 
-        PersonCreateVO paramPersonCreate = new PersonCreateVO(new PersonVO(pessoa));
+        PersonCreateVO paramPersonCreate = new PersonCreateVO(getPassword(device.getModelo()), new PersonVO(pessoa));
         createParamsJSON(request, paramPersonCreate);
         return request;
     }
 
-    private IntegracaoPessoaRequestVO faceCreate(Pessoa pessoa) {
+    private String getPassword(ModeloDevice modelo) {
+        return getStrategy(modelo).getPassword();
+    }
+
+    private IntegracaoPessoaRequestVO faceCreate(Pessoa pessoa, DeviceKeyVO device) {
         IntegracaoPessoaRequestVO request = new IntegracaoPessoaRequestVO("face/create");
 
-        FaceCreateVO paramPersonCreate = new FaceCreateVO(pessoa.getCpf(), pessoa.getFoto());
+        FaceCreateVO paramPersonCreate = new FaceCreateVO(getPassword(device.getModelo()), pessoa.getCpfSemMascara(), pessoa.getFoto());
         createParamsJSON(request, paramPersonCreate);
         return request;
     }
 
-    private IntegracaoPessoaRequestVO permissionsDelete(Pessoa pessoa) {
+    private IntegracaoPessoaRequestVO permissionsDelete(Pessoa pessoa, DeviceKeyVO device) {
         IntegracaoPessoaRequestVO request = new IntegracaoPessoaRequestVO("person/permissionsDelete");
-        createParamsJSON(request, new PermissionDeleteVO(pessoa.getCpf()));
+        createParamsJSON(request, new PermissionDeleteVO(getPassword(device.getModelo()), pessoa.getCpfSemMascara()));
         return request;
     }
 
-    private IntegracaoPessoaRequestVO permissionsCreate(Pessoa pessoa) {
+    private IntegracaoPessoaRequestVO permissionsCreate(Pessoa pessoa, DeviceKeyVO device) {
         IntegracaoPessoaRequestVO request = new IntegracaoPessoaRequestVO("person/permissionsCreate");
-        createParamsJSON(request, new PermissionCreateVO(pessoa.getCpf(), Timestamp.valueOf(pessoa.getDataHoraFim()).getTime()));
+        String time = integracaoPorModelo.get(device.getModelo()).getPermissionTime(pessoa);
+        createParamsJSON(request, new PermissionCreateVO(getPassword(device.getModelo()), pessoa.getCpfSemMascara(), time));
         return request;
     }
 
-    private IntegracaoPessoaRequestVO personDelete(Pessoa pessoa) {
+    private IntegracaoPessoaRequestVO personDelete(Pessoa pessoa, DeviceKeyVO device) {
         IntegracaoPessoaRequestVO request = new IntegracaoPessoaRequestVO("person/delete");
 
-        PersonDeleteVO paramPersonDelete = new PersonDeleteVO(pessoa.getCpf());
+        PersonDeleteVO paramPersonDelete = new PersonDeleteVO(getPassword(device.getModelo()), pessoa.getCpfSemMascara());
         createParamsJSON(request, paramPersonDelete);
         return request;
     }
@@ -176,13 +198,13 @@ public class IntegracaoPessoaService {
         StatusIntegracaoPessoa status;
         StatusIntegracaoPessoa statusAtual = integracaoPessoa.getStatus();
         if (success) {
-            status = statusAtual.isEnviadoInclusao() ?
+            status = statusAtual.isInclusao() ?
                     StatusIntegracaoPessoa.INCLUSAO_OK :
-                    statusAtual.isEnviadoAlteracao() ? StatusIntegracaoPessoa.ALTERACAO_OK : StatusIntegracaoPessoa.EXCLUSAO_OK;
+                    statusAtual.isAlteracao() ? StatusIntegracaoPessoa.ALTERACAO_OK : StatusIntegracaoPessoa.EXCLUSAO_OK;
         } else {
-            status = statusAtual.isEnviadoInclusao() ?
+            status = statusAtual.isInclusao() ?
                     StatusIntegracaoPessoa.INCLUSAO_ERRO :
-                    statusAtual.isEnviadoAlteracao() ? StatusIntegracaoPessoa.ALTERACAO_ERRO : StatusIntegracaoPessoa.EXCLUSAO_ERRO;
+                    statusAtual.isAlteracao() ? StatusIntegracaoPessoa.ALTERACAO_ERRO : StatusIntegracaoPessoa.EXCLUSAO_ERRO;
         }
 
         integracaoPessoa.setStatus(status);

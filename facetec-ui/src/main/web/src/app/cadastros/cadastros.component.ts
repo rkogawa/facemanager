@@ -148,19 +148,26 @@ export class CadastrosComponent {
                 finalize(() => this.btnSalvar.release())
             ).subscribe(
                 success => {
-                    this.feedbackService.showSuccessMessage('Registro cadastrado com sucesso. Iniciando envio da pessoa para aparelhos...');
+
                     this.formFoto.get('useWebcam').setValue(false);
+                    if (success.integracaoAgendada) {
+                        this.feedbackService.showSuccessMessage('Registro cadastrado com sucesso. O envio dos dados para o aparelho foi agendado para a Data/Hora início definida.');
+                        this.novo();
+                    } else {
+                        this.feedbackService.showSuccessMessage('Registro cadastrado com sucesso. Iniciando envio da pessoa para aparelhos...');
 
-                    const dialogRef = this.dialog.open(FeedbackIntegracaoDialogComponent, {
-                        width: '500px',
-                        data: { integracaoId: success.integracaoId },
-                    });
+                        const dialogRef = this.dialog.open(FeedbackIntegracaoDialogComponent, {
+                            width: '500px',
+                            data: { integracaoId: success.integracaoId },
+                        });
 
-                    dialogRef.afterClosed().subscribe(result => {
-                        if (result) {
-                            this.novo();
-                        }
-                    });
+                        dialogRef.afterClosed().subscribe(result => {
+                            if (result) {
+                                this.novo();
+                            }
+                        });
+                    }
+
                 }
             );
     }

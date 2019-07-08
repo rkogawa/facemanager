@@ -22,6 +22,7 @@ export class PessoaResponse {
     integracaoId: number;
     dataHoraFim: number;
     foto: string;
+    integracaoAgendada: boolean;
 }
 
 export class IntegracaoPessoa {

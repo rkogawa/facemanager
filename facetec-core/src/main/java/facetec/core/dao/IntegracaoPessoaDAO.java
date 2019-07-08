@@ -2,6 +2,7 @@ package facetec.core.dao;
 
 import facetec.core.domain.IntegracaoPessoa;
 import facetec.core.domain.Pessoa;
+import facetec.core.domain.enumx.InformacaoAcessoPessoa;
 import facetec.core.domain.enumx.StatusIntegracaoPessoa;
 import facetec.core.security.domain.LocalidadeUsuario;
 import org.hibernate.Session;
@@ -16,6 +17,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -36,15 +38,31 @@ public class IntegracaoPessoaDAO {
         getSession().save(integracaoPessoa);
     }
 
-    public List<IntegracaoPessoa> findPendentes(LocalidadeUsuario localidade) {
+    public List<IntegracaoPessoa> findPermanentesPendentes(LocalidadeUsuario localidade) {
         CriteriaBuilder criteriaBuilder = getSession().getCriteriaBuilder();
         CriteriaQuery<IntegracaoPessoa> query = criteriaBuilder.createQuery(IntegracaoPessoa.class);
         Root<IntegracaoPessoa> root = query.from(IntegracaoPessoa.class);
         Join<IntegracaoPessoa, Pessoa> joinPessoa = root.join("pessoa");
         query.select(root);
+
         Expression<StatusIntegracaoPessoa> exp = root.get("status");
         Predicate pendentesCondition = exp.in(StatusIntegracaoPessoa.PENDENTE_INCLUSAO, StatusIntegracaoPessoa.PENDENTE_ALTERACAO, StatusIntegracaoPessoa.PENDENTE_EXCLUSAO);
-        query.where(criteriaBuilder.equal(joinPessoa.get("localidade"), localidade), pendentesCondition);
+        query.where(criteriaBuilder.equal(joinPessoa.get("localidade"), localidade), pendentesCondition, criteriaBuilder.equal(joinPessoa.get("informacaoAcesso"),
+                InformacaoAcessoPessoa.PERMANENTE));
+        return getSession().createQuery(query).list();
+    }
+
+    public List<IntegracaoPessoa> findVisitantesPendentes(LocalidadeUsuario localidade) {
+        CriteriaBuilder criteriaBuilder = getSession().getCriteriaBuilder();
+        CriteriaQuery<IntegracaoPessoa> query = criteriaBuilder.createQuery(IntegracaoPessoa.class);
+        Root<IntegracaoPessoa> root = query.from(IntegracaoPessoa.class);
+        Join<IntegracaoPessoa, Pessoa> joinPessoa = root.join("pessoa");
+        query.select(root);
+
+        Expression<StatusIntegracaoPessoa> exp = root.get("status");
+        Predicate pendentesCondition = exp.in(StatusIntegracaoPessoa.PENDENTE_INCLUSAO, StatusIntegracaoPessoa.PENDENTE_ALTERACAO, StatusIntegracaoPessoa.PENDENTE_EXCLUSAO);
+        query.where(criteriaBuilder.equal(joinPessoa.get("localidade"), localidade), pendentesCondition, criteriaBuilder.equal(joinPessoa.get("informacaoAcesso"),
+                InformacaoAcessoPessoa.VISITANTE), criteriaBuilder.lessThanOrEqualTo(joinPessoa.get("dataHoraInicio"), LocalDateTime.now()));
         return getSession().createQuery(query).list();
     }
 

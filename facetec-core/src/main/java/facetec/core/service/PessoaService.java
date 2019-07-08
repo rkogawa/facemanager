@@ -89,6 +89,7 @@ public class PessoaService {
         responseVO.setId(pessoa.getId());
         responseVO.setIntegracaoId(integracao.getId());
         responseVO.setFoto(pessoa.getFoto());
+        responseVO.setIntegracaoAgendada(pessoa.getDataHoraInicio() != null && pessoa.getDataHoraInicio().isAfter(LocalDateTime.now()));
         return responseVO;
     }
 

@@ -1,6 +1,7 @@
 package facetec.core.service.integracao;
 
 import facetec.core.domain.Device;
+import facetec.core.domain.Pessoa;
 import facetec.core.domain.enumx.ModeloDevice;
 
 /**
@@ -13,4 +14,6 @@ public interface IntegracaoDeviceStrategy {
     String getBaseUrl(Device d);
 
     String getPassword();
+
+    String getPermissionTime(Pessoa pessoa);
 }

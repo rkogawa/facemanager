@@ -17,15 +17,15 @@ public enum StatusIntegracaoPessoa {
         return this.equals(PENDENTE_INCLUSAO);
     }
 
-    public boolean isEnviadoInclusao() {
-        return this.equals(ENVIADO_INCLUSAO);
+    public boolean isInclusao() {
+        return this.equals(INCLUSAO_OK) || this.equals(ENVIADO_INCLUSAO);
     }
 
     public boolean isExclusao() {
         return this.equals(EXCLUSAO_OK) || this.equals(EXCLUSAO_ERRO);
     }
 
-    public boolean isEnviadoAlteracao() {
-        return this.equals(ENVIADO_ALTERACAO);
+    public boolean isAlteracao() {
+        return this.equals(ALTERACAO_OK) || this.equals(ENVIADO_ALTERACAO);
     }
 }

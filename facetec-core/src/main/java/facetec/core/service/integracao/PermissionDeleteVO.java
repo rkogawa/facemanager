@@ -1,17 +1,16 @@
 package facetec.core.service.integracao;
 
-import facetec.core.service.IntegracaoPessoaService;
-
 /**
  * Created by rkogawa on 21/05/19.
  */
 public class PermissionDeleteVO {
 
-    private final String pass = IntegracaoPessoaService.PARAM_FIELD_PASSWORD;
+    private final String pass;
 
     private final String personId;
 
-    public PermissionDeleteVO(String personId) {
+    public PermissionDeleteVO(String pass, String personId) {
+        this.pass = pass;
         this.personId = personId;
     }
 
