@@ -3,13 +3,13 @@
     <groupId>facetec</groupId>
     <artifactId>facetec-versions</artifactId>
     <name>FaceTec - Versions</name>
-    <version>1.3.0-SNAPSHOT</version>
+    <version>1.3.0</version>
     <packaging>pom</packaging>
 
     <parent>
         <groupId>facetec</groupId>
         <artifactId>facetec</artifactId>
-        <version>1.3.0-SNAPSHOT</version>
+        <version>1.3.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

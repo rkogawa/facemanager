@@ -5,7 +5,7 @@
     <groupId>facetec</groupId>
     <artifactId>facetec</artifactId>
     <name>FaceTec</name>
-    <version>1.3.0-SNAPSHOT</version>
+    <version>1.3.0</version>
     <packaging>pom</packaging>
 
     <parent>
