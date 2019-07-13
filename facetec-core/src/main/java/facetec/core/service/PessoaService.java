@@ -47,7 +47,7 @@ public class PessoaService {
 
     public PessoaResponseVO create(PessoaVO vo) {
         Pessoa pessoa = new Pessoa();
-        pessoa.setCpf(vo.getCpf());
+        pessoa.setCpf(removeMascara(vo.getCpf()));
         return salvarPessoa(vo, pessoa, StatusIntegracaoPessoa.PENDENTE_INCLUSAO);
     }
 
@@ -57,6 +57,10 @@ public class PessoaService {
             throw new RuntimeException("Não foi encontrado pessoa com id " + vo.getId());
         }
         return salvarPessoa(vo, pessoa, StatusIntegracaoPessoa.PENDENTE_ALTERACAO);
+    }
+
+    private String removeMascara(String cpf) {
+        return cpf.replaceAll("[.-]", "");
     }
 
     private PessoaResponseVO salvarPessoa(PessoaVO vo, Pessoa pessoa, StatusIntegracaoPessoa status) {
@@ -78,7 +82,7 @@ public class PessoaService {
         pessoa.setLocalidade(localidade);
         pessoa.setFoto(vo.getFoto());
 
-        this.validarPessoa(pessoa);
+        this.validarPessoa(pessoa, vo);
         pessoaDAO.save(pessoa);
         IntegracaoPessoa integracao = integracaoService.criarIntegracaoPessoa(pessoa, status);
 
@@ -93,9 +97,9 @@ public class PessoaService {
         return responseVO;
     }
 
-    private void validarPessoa(Pessoa pessoa) {
+    private void validarPessoa(Pessoa pessoa, PessoaVO pessoaVO) {
         if (pessoaDAO.existsBy(pessoa.getCpf(), pessoa.getLocalidade(), pessoa.getId())) {
-            throw new RuntimeException("Já existe pessoa cadastrada para o CPF " + pessoa.getCpf());
+            throw new RuntimeException("Já existe pessoa cadastrada para o CPF " + pessoaVO.getCpf());
         }
 
         if (pessoa.getInformacaoAcesso().equals(VISITANTE) && (pessoa.getDataHoraInicio() == null || pessoa.getDataHoraFim() == null)) {
@@ -134,7 +138,7 @@ public class PessoaService {
 
     public PessoaVO findByCpf(String cpf) {
         try {
-            Pessoa pessoa = pessoaDAO.findByCpf(cpf, securityService.getLocalidadeUsuario());
+            Pessoa pessoa = pessoaDAO.findByCpf(removeMascara(cpf), securityService.getLocalidadeUsuario());
             PessoaVO vo = new PessoaVO();
             vo.setId(pessoa.getId());
             vo.setNome(pessoa.getNome());

@@ -16,7 +16,7 @@ public class PersonVO {
     private String iccardNum = "";
 
     public PersonVO(Pessoa pessoa) {
-        this.id = pessoa.getCpfSemMascara();
+        this.id = pessoa.getCpf();
         this.name = pessoa.getNome();
         this.idcardNum = pessoa.getId().toString();
     }

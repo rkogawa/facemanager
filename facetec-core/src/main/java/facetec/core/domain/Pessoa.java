@@ -193,8 +193,4 @@ public class Pessoa {
         this.foto = foto;
     }
 
-    @Transient
-    public String getCpfSemMascara() {
-        return this.getCpf().replaceAll("[.-]", "");
-    }
 }

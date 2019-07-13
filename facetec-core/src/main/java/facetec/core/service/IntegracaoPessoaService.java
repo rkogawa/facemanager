@@ -159,28 +159,28 @@ public class IntegracaoPessoaService {
     private IntegracaoPessoaRequestVO faceCreate(Pessoa pessoa, DeviceKeyVO device) {
         IntegracaoPessoaRequestVO request = new IntegracaoPessoaRequestVO("face/create");
 
-        FaceCreateVO paramPersonCreate = new FaceCreateVO(getPassword(device.getModelo()), pessoa.getCpfSemMascara(), pessoa.getFoto());
+        FaceCreateVO paramPersonCreate = new FaceCreateVO(getPassword(device.getModelo()), pessoa.getCpf(), pessoa.getFoto());
         createParamsJSON(request, paramPersonCreate);
         return request;
     }
 
     private IntegracaoPessoaRequestVO permissionsDelete(Pessoa pessoa, DeviceKeyVO device) {
         IntegracaoPessoaRequestVO request = new IntegracaoPessoaRequestVO("person/permissionsDelete");
-        createParamsJSON(request, new PermissionDeleteVO(getPassword(device.getModelo()), pessoa.getCpfSemMascara()));
+        createParamsJSON(request, new PermissionDeleteVO(getPassword(device.getModelo()), pessoa.getCpf()));
         return request;
     }
 
     private IntegracaoPessoaRequestVO permissionsCreate(Pessoa pessoa, DeviceKeyVO device) {
         IntegracaoPessoaRequestVO request = new IntegracaoPessoaRequestVO("person/permissionsCreate");
         String time = integracaoPorModelo.get(device.getModelo()).getPermissionTime(pessoa);
-        createParamsJSON(request, new PermissionCreateVO(getPassword(device.getModelo()), pessoa.getCpfSemMascara(), time));
+        createParamsJSON(request, new PermissionCreateVO(getPassword(device.getModelo()), pessoa.getCpf(), time));
         return request;
     }
 
     private IntegracaoPessoaRequestVO personDelete(Pessoa pessoa, DeviceKeyVO device) {
         IntegracaoPessoaRequestVO request = new IntegracaoPessoaRequestVO("person/delete");
 
-        PersonDeleteVO paramPersonDelete = new PersonDeleteVO(getPassword(device.getModelo()), pessoa.getCpfSemMascara());
+        PersonDeleteVO paramPersonDelete = new PersonDeleteVO(getPassword(device.getModelo()), pessoa.getCpf());
         createParamsJSON(request, paramPersonDelete);
         return request;
     }

@@ -21,8 +21,11 @@ Rodar o build da aplicação utilizando maven. Na raíz do projeto facetec, exec
 
 1. Criar uma base em PostgreSQL, as configurações do banco se encontram em `facetec-core\src\test\resources\application.properties`. É possível também subir a aplicação utilizando base H2, fazendo a configuração neste mesmo arquivo.
 
-2. Executar a classe `StartFaceTecApplication`. De acordo com a configuração em `application.properties` a aplicação vai subir em `http://localhost:8090`.
-* Para criar o primeiro usuário na base, pode se usar o insert `INSERT INTO FACETEC_USER VALUES (1, '$2a$11$Xr/V./QVjIbjSC0Q5FIMre7f0PNdJFwBDUHv80DJW/5nBmyLl7uR.', true, 'facetec');` para criar usuário com senha `facetec`. A senha é armazenada no banco criptografada pela classe `BCryptPasswordEncoder`.
+2. Executar a classe `StartFaceTecApplication`. De acordo com a configuração em `application.properties` a aplicação vai subir em `http://localhost:8090/ftca888`.
+* Para criar o primeiro usuário na base, pode se usar os inserts abaixo para criar usuários facetec e admin com senha `facetec`, para a localidade `facetec`. A senha é armazenada no banco criptografada pela classe `BCryptPasswordEncoder`.
+    * `INSERT INTO LOCALIDADE_USUARIO VALUES (1, 'Facetec');`
+    * `INSERT INTO FACETEC_USER VALUES (1, '$2a$11$Xr/V./QVjIbjSC0Q5FIMre7f0PNdJFwBDUHv80DJW/5nBmyLl7uR.', true, 'admin', 1);`
+    * `INSERT INTO FACETEC_USER VALUES (2, '$2a$11$Xr/V./QVjIbjSC0Q5FIMre7f0PNdJFwBDUHv80DJW/5nBmyLl7uR.', false, 'facetec', 1);`
 
 3. A criação das tabelas é feita utilizando <a href="https://www.liquibase.org/">Liquibase</a> na subida da aplicação, com base no arquivo `db.changelog.yaml`;
 
@@ -37,8 +40,7 @@ Rodar o build da aplicação utilizando maven. Na raíz do projeto facetec, exec
 1. Executar a classe `ClientApplication`.
 
 2. Parâmetros configuráveis que podem ser definidos em `facetec-client\src\main\resources\application.properties`:
-* `facetec.server.url` define a URL do servidor em que está executando a interface WEB (default https://www.facetec.tk/);
-* `facetec.client.url` ao subir a aplicação Desktop é aberto junto um browser para a URL parametrizada (default https://www.facetec.tk/).
+* `facetec.client.url` define a URL do servidor em que está executando a interface WEB (default https://www.facetec.tk/ftca888/);
 
 ## Deploy
 
