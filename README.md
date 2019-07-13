@@ -53,4 +53,4 @@ Rodar o build da aplicação utilizando maven. Na raíz do projeto facetec, exec
 
 2. Para gerar a aplicação Desktop como arquivo executável, executar o comando abaixo após o build na pasta `facetec-client\target`, trocando os campos `<version>` para a versão que será gerada e `<Path-do-projeto>` para o diretório onde se encontra o projeto:
 
-`javapackager -deploy -native exe -outdir ./executable -srcfiles facetec-client-<version>.jar -outfile instalador-ftca888 -name instalador-ftca888 -title "FACETEC - Instalador FTCA-888" -appclass org.springframework.boot.loader.JarLauncher -v -Bicon=<Path-do-projeto>\facetec\facetec-client\src\main\resources\facetec_logo.ico -BappVersion=<version>`
+`javapackager -deploy -native exe -outdir ./executable -srcfiles facetec-client-<version>.jar -outfile instalador-ftca888 -name instalador-ftca888 -title "FACETEC - Instalador FTCA-888" -appclass org.springframework.boot.loader.JarLauncher -v -Bicon=<Path-do-projeto>\facetec\facetec-client\src\main\resources\facetec_logo.ico -BappVersion=<version> -BshortcutHint=true`
